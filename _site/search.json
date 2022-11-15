@@ -1,0 +1,37 @@
+{
+  "articles": [
+    {
+      "path": "hapmapAnalysis.html",
+      "title": "A final analysis of our HapMap data",
+      "description": "How we combined our knowledge of multiple hypothesis testing and PLINK results to determine an appropriate significance threshold for our HapMap dataset\n",
+      "author": [],
+      "contents": "\nShow data analysis steps and results\n\n\n\n",
+      "last_modified": "2022-11-14T20:23:20-06:00"
+    },
+    {
+      "path": "index.html",
+      "title": "An Extension of Multiple Hypothesis Testing in Statistical Genetics",
+      "description": "A project by Will Brazgel and Erin Franke exploring multiple hypothesis testing and using PLINK and R to efficiently execute it on genetic data\n",
+      "author": [],
+      "contents": "\nMotivation here\n\n\n\n",
+      "last_modified": "2022-11-14T20:24:31-06:00"
+    },
+    {
+      "path": "multipletesting.html",
+      "title": "Multiple Hypothesis Testing",
+      "description": "What it is and why it is important for when working with genetic data \n",
+      "author": [],
+      "contents": "\nExplain background of multiple testing\n\n\n\n",
+      "last_modified": "2022-11-14T20:23:21-06:00"
+    },
+    {
+      "path": "plink.html",
+      "title": "Understanding genetic data with PLINK",
+      "description": "How we used PLINK to make analyzing genetic data more computationally efficient\n",
+      "author": [],
+      "contents": "\nExplain how we used PLINK\n\n\n\n",
+      "last_modified": "2022-11-14T20:23:22-06:00"
+    }
+  ],
+  "collections": []
+}

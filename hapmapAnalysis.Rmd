@@ -1,0 +1,16 @@
+---
+title: "A final analysis of our HapMap data"
+description: |
+    How we combined our knowledge of multiple hypothesis testing and PLINK results to determine an appropriate significance threshold for our HapMap dataset
+site: distill::distill_website
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+# Learn more about creating websites with Distill at:
+# https://rstudio.github.io/distill/website.html
+
+```
+
+Show data analysis steps and results
