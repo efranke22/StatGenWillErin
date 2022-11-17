@@ -19,12 +19,11 @@ library(snpStats)
 library(NatParksPalettes)
 ```
 
-## Read in data from plink
+### Load hapmap data
+
+Create a null trait and write a file to the plink data folder.
 
 ```{r}
-adjust_results <- read.table("plinkData/as2.assoc.adjusted") %>%
-  row_to_names(row_number = 1)
-
 fam <- 'plinkData/HapMap_3_r3_1.fam'
 bim <- 'plinkData/HapMap_3_r3_1.bim'
 bed <- 'plinkData/HapMap_3_r3_1.bed'
@@ -32,46 +31,27 @@ bed <- 'plinkData/HapMap_3_r3_1.bed'
 hapmap <- read.plink(bed, bim, fam)
 ```
 
-Combine snp information and p-value results
+```{r}
+manhattan_data <- cbind(hapmap$fam %>% select(1:2), trait = rnorm(n = 165, mean = 0, sd = 1))
+write_delim(manhattan_data, "plinkData/manhattandata")
+```
+
+Use command to run GWAS in PLINK, accounting for correlated SNPs
+- ./plink --bfile HapMap_3_r3_1 --assoc --adjust --pheno manhattandata --out as2
+
+Read in results from PLINK and create Manhattan plot
 
 ```{r}
-adjust_with_position <- adjust_results %>%
+results <- read_table("plinkData/as2.qassoc.adjusted")
+
+results_with_position <- results %>%
   mutate(CHR = as.integer(CHR)) %>%
   left_join(hapmap$map %>%
               select(snp.name, position, chromosome), by = c("SNP" = "snp.name", "CHR" = "chromosome"))
-
-#no scientific notation
-adjust_with_position_no_sci <- adjust_with_position %>%
-  filter(!str_detect(GC, "e-")) %>%
-  mutate(GC = as.numeric(GC))
-
-#deal with scientific notation
-adjust_with_position_sci <- adjust_with_position %>%
-  filter(str_detect(GC, "e-")) %>%
-  separate(GC, into = c("decimal", "digits"), sep = "e-0", remove =FALSE) %>%
-  mutate(decimal = as.numeric(decimal), 
-         digits =as.numeric(digits), 
-         GC = decimal * 10^(-digits)) %>%
-  select(-decimal, -digits)
-
-adjust_with_position <- bind_rows(adjust_with_position_sci, adjust_with_position_no_sci)
 ```
-
-## Analysis
-
-Most significant SNPs
-
-```{r}
-adjust_with_position %>%
-  arrange(GC) %>%
-  head(10)
-```
-
-
-Create manhattan plot
 
 ```{r, cache=TRUE}
-adjust_with_position %>%
+results_with_position %>%
   mutate(minuslogp = -log10(GC),
          CHR = as.factor(CHR)) %>%
   ggplot(aes(x = CHR, y = minuslogp, group = interaction(CHR, position), color = CHR)) + 
@@ -82,30 +62,44 @@ adjust_with_position %>%
   theme(legend.position = "none")
 ```
 
+## Complete replications
 
-```{r}
-hapmap$fam %>%
-  count(affected)
+Simulation based approach. Approximately 14.45 minutes to run GWAS in plink, then 3 minutes 20 seconds to load files into R. 
+
+```{r, eval=FALSE}
+create_quantitative_trait <- function(i){
+  y <- rnorm(n = 165, mean = 0, sd = 1) 
+}
+
+traits <- as.data.frame(replicate(1000, create_quantitative_trait()))
+
+traits_identified <- cbind(hapmap$fam %>%
+        select(1:2), traits)
+
+write_delim(traits_identified, "plinkData/traits_identified")
 ```
 
-Account for correlation
+./plink --bfile HapMap_3_r3_1 --assoc --pheno traits_identified --all-pheno --pfilter 1e-3
 
-```{r}
-chr1_200 <- hapmap$genotypes[1:165, 1:200]
-hapmap.ld <- ld(chr1_200, depth = 199, stats = "R.squared", symmetric = TRUE)
-color.pal <- natparks.pals("Acadia", 10)
-image(hapmap.ld, lwd = 0, cuts = 9, col.regions = color.pal, colorkey = TRUE)
-```
+```{r, cache=TRUE}
+dataFiles <- lapply(Sys.glob("plinkData/plink.P*.qassoc"), read_table)
 
-```{r}
-#get monomorphic SNPs only
-maf_chr1_200 <- col.summary(chr1_200)$MAF
-mono <- which(maf_chr1_200 == 0)
+pvalues <- sapply(dataFiles, function(x) min(x$P, na.rm=TRUE))
 
-# calculate LD on polymorphic SNPs only
-hapmap.ld.nomono <- ld(chr1_200[,-mono], depth = 199-length(mono), stats = "R.squared", symmetric = TRUE)
+as.data.frame(pvalues) %>%
+  ggplot(aes(x=pvalues))+
+  geom_density(fill = "cadetblue")+
+  theme_classic()+
+  annotate(geom = "text", color = "red", x = 1e-05, y = 250000, label = "0.05 quantile:\n7.31495e-08", family = "mono", cex = 3)+
+  geom_vline(xintercept = 7.31495e-08, color = "red", linetype = "dashed")+
+  labs(x="P-values", y = "Density", title = "Distribution of minimum p-values for 1000 replications")+
+  geom_curve(aes(x = 1e-05, y = 270000, xend = 1e-06, yend = 350000), 
+             arrow = arrow(length = unit(0.03, "npc")), curvature = 0.3, color = "red")+
+  theme(plot.title.position = "plot", 
+        plot.title = element_text(family = "mono"), 
+        axis.title = element_text(family = "mono"), 
+        axis.text = element_text(family = "mono"))
 
-# plot 
-image(hapmap.ld.nomono, lwd = 0, cuts = 9, col.regions = color.pal, colorkey = TRUE)
+quantile(pvalues, 0.05)
 ```
 

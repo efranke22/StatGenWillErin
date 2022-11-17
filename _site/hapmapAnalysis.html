@@ -2133,79 +2133,39 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/kevinsblake/NatParksPalettes'>NatParksPalettes</a></span><span class='op'>)</span></span></code></pre>
 </div>
 </div>
-<h2 id="read-in-data-from-plink">Read in data from plink</h2>
+<h3 id="load-hapmap-data">Load hapmap data</h3>
+<p>Create a null trait and write a file to the plink data folder.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>adjust_results</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span><span class='op'>(</span><span class='st'>"plinkData/as2.assoc.adjusted"</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
-<span>  <span class='fu'><a href='https://rdrr.io/pkg/janitor/man/row_to_names.html'>row_to_names</a></span><span class='op'>(</span>row_number <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span></span>
-<span></span>
-<span><span class='va'>fam</span> <span class='op'>&lt;-</span> <span class='st'>'plinkData/HapMap_3_r3_1.fam'</span></span>
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>fam</span> <span class='op'>&lt;-</span> <span class='st'>'plinkData/HapMap_3_r3_1.fam'</span></span>
 <span><span class='va'>bim</span> <span class='op'>&lt;-</span> <span class='st'>'plinkData/HapMap_3_r3_1.bim'</span></span>
 <span><span class='va'>bed</span> <span class='op'>&lt;-</span> <span class='st'>'plinkData/HapMap_3_r3_1.bed'</span></span>
 <span></span>
 <span><span class='va'>hapmap</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/snpStats/man/read.plink.html'>read.plink</a></span><span class='op'>(</span><span class='va'>bed</span>, <span class='va'>bim</span>, <span class='va'>fam</span><span class='op'>)</span></span></code></pre>
 </div>
 </div>
-<p>Combine snp information and p-value results</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>adjust_with_position</span> <span class='op'>&lt;-</span> <span class='va'>adjust_results</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>manhattan_data</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span><span class='op'>(</span><span class='va'>hapmap</span><span class='op'>$</span><span class='va'>fam</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span><span class='op'>)</span>, trait <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span>n <span class='op'>=</span> <span class='fl'>165</span>, mean <span class='op'>=</span> <span class='fl'>0</span>, sd <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span></span>
+<span><span class='fu'><a href='https://readr.tidyverse.org/reference/write_delim.html'>write_delim</a></span><span class='op'>(</span><span class='va'>manhattan_data</span>, <span class='st'>"plinkData/manhattandata"</span><span class='op'>)</span></span></code></pre>
+</div>
+</div>
+<p>Use command to run GWAS in PLINK, accounting for correlated SNPs
+- ./plink –bfile HapMap_3_r3_1 –assoc –adjust –pheno manhattandata –out as2</p>
+<p>Read in results from PLINK and create Manhattan plot</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>results</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://readr.tidyverse.org/reference/read_table.html'>read_table</a></span><span class='op'>(</span><span class='st'>"plinkData/as2.qassoc.adjusted"</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>results_with_position</span> <span class='op'>&lt;-</span> <span class='va'>results</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
 <span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>CHR <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span><span class='op'>(</span><span class='va'>CHR</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
 <span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate-joins.html'>left_join</a></span><span class='op'>(</span><span class='va'>hapmap</span><span class='op'>$</span><span class='va'>map</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
-<span>              <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>snp.name</span>, <span class='va'>position</span>, <span class='va'>chromosome</span><span class='op'>)</span>, by <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SNP"</span> <span class='op'>=</span> <span class='st'>"snp.name"</span>, <span class='st'>"CHR"</span> <span class='op'>=</span> <span class='st'>"chromosome"</span><span class='op'>)</span><span class='op'>)</span></span>
-<span></span>
-<span><span class='co'>#no scientific notation</span></span>
-<span><span class='va'>adjust_with_position_no_sci</span> <span class='op'>&lt;-</span> <span class='va'>adjust_with_position</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
-<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='op'>!</span><span class='fu'><a href='https://stringr.tidyverse.org/reference/str_detect.html'>str_detect</a></span><span class='op'>(</span><span class='va'>GC</span>, <span class='st'>"e-"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
-<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>GC <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span><span class='op'>(</span><span class='va'>GC</span><span class='op'>)</span><span class='op'>)</span></span>
-<span></span>
-<span><span class='co'>#deal with scientific notation</span></span>
-<span><span class='va'>adjust_with_position_sci</span> <span class='op'>&lt;-</span> <span class='va'>adjust_with_position</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
-<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='fu'><a href='https://stringr.tidyverse.org/reference/str_detect.html'>str_detect</a></span><span class='op'>(</span><span class='va'>GC</span>, <span class='st'>"e-"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
-<span>  <span class='fu'><a href='https://tidyr.tidyverse.org/reference/separate.html'>separate</a></span><span class='op'>(</span><span class='va'>GC</span>, into <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"decimal"</span>, <span class='st'>"digits"</span><span class='op'>)</span>, sep <span class='op'>=</span> <span class='st'>"e-0"</span>, remove <span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
-<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>decimal <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span><span class='op'>(</span><span class='va'>decimal</span><span class='op'>)</span>, </span>
-<span>         digits <span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span><span class='op'>(</span><span class='va'>digits</span><span class='op'>)</span>, </span>
-<span>         GC <span class='op'>=</span> <span class='va'>decimal</span> <span class='op'>*</span> <span class='fl'>10</span><span class='op'>^</span><span class='op'>(</span><span class='op'>-</span><span class='va'>digits</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
-<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='op'>-</span><span class='va'>decimal</span>, <span class='op'>-</span><span class='va'>digits</span><span class='op'>)</span></span>
-<span></span>
-<span><span class='va'>adjust_with_position</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>adjust_with_position_sci</span>, <span class='va'>adjust_with_position_no_sci</span><span class='op'>)</span></span></code></pre>
+<span>              <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>snp.name</span>, <span class='va'>position</span>, <span class='va'>chromosome</span><span class='op'>)</span>, by <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SNP"</span> <span class='op'>=</span> <span class='st'>"snp.name"</span>, <span class='st'>"CHR"</span> <span class='op'>=</span> <span class='st'>"chromosome"</span><span class='op'>)</span><span class='op'>)</span></span></code></pre>
 </div>
 </div>
-<h2 id="analysis">Analysis</h2>
-<p>Most significant SNPs</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>adjust_with_position</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
-<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/arrange.html'>arrange</a></span><span class='op'>(</span><span class='va'>GC</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
-<span>  <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='fl'>10</span><span class='op'>)</span></span></code></pre>
-</div>
-<pre><code>   CHR       SNP     UNADJ        GC   BONF   HOLM SIDAK_SS SIDAK_SD
-1    8  rs279466 5.549e-07 1.023e-06 0.7095 0.7095   0.5081   0.5081
-2    8  rs279460 5.549e-07 1.023e-06 0.7095 0.7095   0.5081   0.5081
-3    8  rs279453 5.549e-07 1.023e-06 0.7095 0.7095   0.5081   0.5081
-4    8 rs2623297 5.549e-07 1.023e-06 0.7095 0.7095   0.5081   0.5081
-5    8  rs279973 1.289e-06 2.287e-06      1      1   0.8075   0.8075
-6    8  rs185773 1.289e-06 2.287e-06      1      1   0.8075   0.8075
-7    8  rs183967 1.289e-06 2.287e-06      1      1   0.8075   0.8075
-8    4 rs7673394 1.325e-06 2.348e-06      1      1   0.8161   0.8161
-9    3 rs1097157 3.881e-06 6.552e-06      1      1    0.993    0.993
-10   3 rs1840290 3.881e-06 6.552e-06      1      1    0.993    0.993
-   FDR_BH FDR_BY  position
-1  0.1774      1  94153170
-2  0.1774      1  94155568
-3  0.1774      1  94157823
-4  0.1774      1  94158475
-5  0.2117      1  94132061
-6  0.2117      1  94132798
-7  0.2117      1  94133467
-8  0.2117      1 176437221
-9  0.4962      1  82780003
-10 0.4962      1  82785436</code></pre>
-</div>
-<p>Create manhattan plot</p>
-<div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>adjust_with_position</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>results_with_position</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
 <span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>minuslogp <span class='op'>=</span> <span class='op'>-</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log10</a></span><span class='op'>(</span><span class='va'>GC</span><span class='op'>)</span>,</span>
 <span>         CHR <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>as.factor</a></span><span class='op'>(</span><span class='va'>CHR</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
 <span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>CHR</span>, y <span class='op'>=</span> <span class='va'>minuslogp</span>, group <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/interaction.html'>interaction</a></span><span class='op'>(</span><span class='va'>CHR</span>, <span class='va'>position</span><span class='op'>)</span>, color <span class='op'>=</span> <span class='va'>CHR</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span> </span>
@@ -2217,41 +2177,51 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 <p><img src="hapmapAnalysis_files/figure-html5/unnamed-chunk-5-1.png" width="624" /></p>
 </div>
+<h2 id="complete-replications">Complete replications</h2>
+<p>Simulation based approach. Approximately 14.45 minutes to run GWAS in plink, then 3 minutes 20 seconds to load files into R.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>hapmap</span><span class='op'>$</span><span class='va'>fam</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
-<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/count.html'>count</a></span><span class='op'>(</span><span class='va'>affected</span><span class='op'>)</span></span></code></pre>
-</div>
-<pre><code>  affected  n
-1        1 56
-2        2 56
-3       NA 53</code></pre>
-</div>
-<p>Account for correlation</p>
-<div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>chr1_200</span> <span class='op'>&lt;-</span> <span class='va'>hapmap</span><span class='op'>$</span><span class='va'>genotypes</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>165</span>, <span class='fl'>1</span><span class='op'>:</span><span class='fl'>200</span><span class='op'>]</span></span>
-<span><span class='va'>hapmap.ld</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/snpStats/man/ld.html'>ld</a></span><span class='op'>(</span><span class='va'>chr1_200</span>, depth <span class='op'>=</span> <span class='fl'>199</span>, stats <span class='op'>=</span> <span class='st'>"R.squared"</span>, symmetric <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
-<span><span class='va'>color.pal</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/NatParksPalettes/man/natparks.pals.html'>natparks.pals</a></span><span class='op'>(</span><span class='st'>"Acadia"</span>, <span class='fl'>10</span><span class='op'>)</span></span>
-<span><span class='fu'><a href='https://rdrr.io/r/graphics/image.html'>image</a></span><span class='op'>(</span><span class='va'>hapmap.ld</span>, lwd <span class='op'>=</span> <span class='fl'>0</span>, cuts <span class='op'>=</span> <span class='fl'>9</span>, col.regions <span class='op'>=</span> <span class='va'>color.pal</span>, colorkey <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span></code></pre>
-</div>
-<p><img src="hapmapAnalysis_files/figure-html5/unnamed-chunk-7-1.png" width="624" /></p>
-</div>
-<div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'>#get monomorphic SNPs only</span></span>
-<span><span class='va'>maf_chr1_200</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/snpStats/man/row.summary.html'>col.summary</a></span><span class='op'>(</span><span class='va'>chr1_200</span><span class='op'>)</span><span class='op'>$</span><span class='va'>MAF</span></span>
-<span><span class='va'>mono</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/which.html'>which</a></span><span class='op'>(</span><span class='va'>maf_chr1_200</span> <span class='op'>==</span> <span class='fl'>0</span><span class='op'>)</span></span>
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>create_quantitative_trait</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>i</span><span class='op'>)</span><span class='op'>{</span></span>
+<span>  <span class='va'>y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span>n <span class='op'>=</span> <span class='fl'>165</span>, mean <span class='op'>=</span> <span class='fl'>0</span>, sd <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span> </span>
+<span><span class='op'>}</span></span>
 <span></span>
-<span><span class='co'># calculate LD on polymorphic SNPs only</span></span>
-<span><span class='va'>hapmap.ld.nomono</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/snpStats/man/ld.html'>ld</a></span><span class='op'>(</span><span class='va'>chr1_200</span><span class='op'>[</span>,<span class='op'>-</span><span class='va'>mono</span><span class='op'>]</span>, depth <span class='op'>=</span> <span class='fl'>199</span><span class='op'>-</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>mono</span><span class='op'>)</span>, stats <span class='op'>=</span> <span class='st'>"R.squared"</span>, symmetric <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span><span class='va'>traits</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/as.data.frame.html'>as.data.frame</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>replicate</a></span><span class='op'>(</span><span class='fl'>1000</span>, <span class='fu'>create_quantitative_trait</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span></span>
 <span></span>
-<span><span class='co'># plot </span></span>
-<span><span class='fu'><a href='https://rdrr.io/r/graphics/image.html'>image</a></span><span class='op'>(</span><span class='va'>hapmap.ld.nomono</span>, lwd <span class='op'>=</span> <span class='fl'>0</span>, cuts <span class='op'>=</span> <span class='fl'>9</span>, col.regions <span class='op'>=</span> <span class='va'>color.pal</span>, colorkey <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span></code></pre>
+<span><span class='va'>traits_identified</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span><span class='op'>(</span><span class='va'>hapmap</span><span class='op'>$</span><span class='va'>fam</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span>        <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span><span class='op'>)</span>, <span class='va'>traits</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='fu'><a href='https://readr.tidyverse.org/reference/write_delim.html'>write_delim</a></span><span class='op'>(</span><span class='va'>traits_identified</span>, <span class='st'>"plinkData/traits_identified"</span><span class='op'>)</span></span></code></pre>
 </div>
-<p><img src="hapmapAnalysis_files/figure-html5/unnamed-chunk-8-1.png" width="624" /></p>
 </div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<p>./plink –bfile HapMap_3_r3_1 –assoc –pheno traits_identified –all-pheno –pfilter 1e-3</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>dataFiles</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Sys.glob.html'>Sys.glob</a></span><span class='op'>(</span><span class='st'>"plinkData/plink.P*.qassoc"</span><span class='op'>)</span>, <span class='va'>read_table</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>pvalues</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>sapply</a></span><span class='op'>(</span><span class='va'>dataFiles</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>$</span><span class='va'>P</span>, na.rm<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/base/as.data.frame.html'>as.data.frame</a></span><span class='op'>(</span><span class='va'>pvalues</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x<span class='op'>=</span><span class='va'>pvalues</span><span class='op'>)</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_density.html'>geom_density</a></span><span class='op'>(</span>fill <span class='op'>=</span> <span class='st'>"cadetblue"</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_classic</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/annotate.html'>annotate</a></span><span class='op'>(</span>geom <span class='op'>=</span> <span class='st'>"text"</span>, color <span class='op'>=</span> <span class='st'>"red"</span>, x <span class='op'>=</span> <span class='fl'>1e-05</span>, y <span class='op'>=</span> <span class='fl'>250000</span>, label <span class='op'>=</span> <span class='st'>"0.05 quantile:\n7.31495e-08"</span>, family <span class='op'>=</span> <span class='st'>"mono"</span>, cex <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_abline.html'>geom_vline</a></span><span class='op'>(</span>xintercept <span class='op'>=</span> <span class='fl'>7.31495e-08</span>, color <span class='op'>=</span> <span class='st'>"red"</span>, linetype <span class='op'>=</span> <span class='st'>"dashed"</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>x<span class='op'>=</span><span class='st'>"P-values"</span>, y <span class='op'>=</span> <span class='st'>"Density"</span>, title <span class='op'>=</span> <span class='st'>"Distribution of minimum p-values for 1000 replications"</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_segment.html'>geom_curve</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='fl'>1e-05</span>, y <span class='op'>=</span> <span class='fl'>270000</span>, xend <span class='op'>=</span> <span class='fl'>1e-06</span>, yend <span class='op'>=</span> <span class='fl'>350000</span><span class='op'>)</span>, </span>
+<span>             arrow <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/grid/arrow.html'>arrow</a></span><span class='op'>(</span>length <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/grid/unit.html'>unit</a></span><span class='op'>(</span><span class='fl'>0.03</span>, <span class='st'>"npc"</span><span class='op'>)</span><span class='op'>)</span>, curvature <span class='op'>=</span> <span class='fl'>0.3</span>, color <span class='op'>=</span> <span class='st'>"red"</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme.html'>theme</a></span><span class='op'>(</span>plot.title.position <span class='op'>=</span> <span class='st'>"plot"</span>, </span>
+<span>        plot.title <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_text</a></span><span class='op'>(</span>family <span class='op'>=</span> <span class='st'>"mono"</span><span class='op'>)</span>, </span>
+<span>        axis.title <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_text</a></span><span class='op'>(</span>family <span class='op'>=</span> <span class='st'>"mono"</span><span class='op'>)</span>, </span>
+<span>        axis.text <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_text</a></span><span class='op'>(</span>family <span class='op'>=</span> <span class='st'>"mono"</span><span class='op'>)</span><span class='op'>)</span></span></code></pre>
+</div>
+<img src="hapmapAnalysis_files/figure-html5/unnamed-chunk-7-1.png" width="624" />
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='fu'><a href='https://rdrr.io/r/stats/quantile.html'>quantile</a></span><span class='op'>(</span><span class='va'>pvalues</span>, <span class='fl'>0.05</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>         5% 
+7.31495e-08 </code></pre>
+</div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
