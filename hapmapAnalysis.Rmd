@@ -50,6 +50,7 @@ results_with_position <- results %>%
               select(snp.name, position, chromosome), by = c("SNP" = "snp.name", "CHR" = "chromosome"))
 ```
 
+82146
 ```{r, cache=TRUE}
 results_with_position %>%
   mutate(minuslogp = -log10(GC),
@@ -58,6 +59,8 @@ results_with_position %>%
   geom_point(position = position_dodge(0.8)) + 
   labs(x = 'chromosome', y = expression(paste('-log'[10],'(p-value)')))+
   theme_classic()+
+  geom_hline(yintercept = 7.135789, color = "navy", linetype = "dashed")+
+  geom_hline(yintercept = 1.30103, color = "navy", linetype = "dashed")+
   scale_color_manual(values=natparks.pals("DeathValley",24))+
   theme(legend.position = "none")
 ```
