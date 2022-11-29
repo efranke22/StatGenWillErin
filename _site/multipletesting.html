@@ -90,27 +90,27 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--radix_placeholder_meta_tags-->
   <title>Home: Multiple Hypothesis Testing</title>
 
-  <meta property="description" itemprop="description" content="What it is and why it is important for when working with genetic data"/>
+  <meta property="description" itemprop="description" content="An explanation of the complexities to making statistically significant conclusions when working with genetic data"/>
 
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
   <meta property="og:title" content="Home: Multiple Hypothesis Testing"/>
   <meta property="og:type" content="article"/>
-  <meta property="og:description" content="What it is and why it is important for when working with genetic data"/>
+  <meta property="og:description" content="An explanation of the complexities to making statistically significant conclusions when working with genetic data"/>
   <meta property="og:locale" content="en_US"/>
   <meta property="og:site_name" content="Home"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
   <meta property="twitter:title" content="Home: Multiple Hypothesis Testing"/>
-  <meta property="twitter:description" content="What it is and why it is important for when working with genetic data"/>
+  <meta property="twitter:description" content="An explanation of the complexities to making statistically significant conclusions when working with genetic data"/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","site"]}},"value":[{"type":"character","attributes":{},"value":["Multiple Hypothesis Testing"]},{"type":"character","attributes":{},"value":["What it is and why it is important for when working with genetic data \n"]},{"type":"character","attributes":{},"value":["distill::distill_website"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","site"]}},"value":[{"type":"character","attributes":{},"value":["Multiple Hypothesis Testing"]},{"type":"character","attributes":{},"value":["An explanation of the complexities to making statistically significant conclusions when working with genetic data \n"]},{"type":"character","attributes":{},"value":["distill::distill_website"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2094,7 +2094,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Multiple Hypothesis Testing","description":"What it is and why it is important for when working with genetic data","authors":[]}
+{"title":"Multiple Hypothesis Testing","description":"An explanation of the complexities to making statistically significant conclusions when working with genetic data","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2120,13 +2120,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <h1>Multiple Hypothesis Testing</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-<p><p>What it is and why it is important for when working with genetic data</p></p>
+<p><p>An explanation of the complexities to making statistically significant conclusions when working with genetic data</p></p>
 </div>
 
 
 <div class="d-article">
-<p>Explain background of multiple testing</p>
-<p>Power of GWAS</p>
+<h2 id="genome-wide-association-studies">Genome Wide Association Studies</h2>
+<p>If we compare any two human genomes, they are nearly identical. However, places where DNA sequences differ are known as genetic variants. There are multiple types of genetic variants, but our work is primarily focused on single nucleotide variants (SNVs).</p>
+<p><u>SNVs</u> : DNA variation that occurs when a single nucleotide in the genome sequence is altered (A vs G at a single position).</p>
+<figure>
+<img src="%22C:\Users\wbraz\Downloads\geneticvariants.png%22" alt="Genetic Variant Example" />
+<figcaption aria-hidden="true">Genetic Variant Example</figcaption>
+</figure>
+<h3 id="genome-wide-association-studies-can-aid-in-the-determination-of-which-genetic-variants-are-associated-with-an-illness-or-trait-of-interest.">Genome Wide Association Studies can aid in the determination of which genetic variants are associated with an illness or trait of interest.</h3>
+<p>In order to make statements on whether or not a genetic variant is associated with the trait of interest, we utilize hypothesis testing.</p>
+<h2 id="hypothesis-testing-review">Hypothesis Testing Review</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->

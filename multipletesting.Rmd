@@ -1,6 +1,6 @@
 ---
 title: "Multiple Hypothesis Testing"
-description: "What it is and why it is important for when working with genetic data
+description: "An explanation of the complexities to making statistically significant conclusions when working with genetic data
   \n"
 site: distill::distill_website
 ---
@@ -10,10 +10,21 @@ knitr::opts_chunk$set(echo = FALSE)
 
 # Learn more about creating websites with Distill at:
 # https://rstudio.github.io/distill/website.html
-
 ```
 
-Explain background of multiple testing
+## Genome Wide Association Studies
+
+If we compare any two human genomes, they are nearly identical. However, places where DNA sequences differ are known as genetic variants. There are multiple types of genetic variants, but our work is primarily focused on single nucleotide variants (SNVs).
+
+<u>SNVs</u> : DNA variation that occurs when a single nucleotide in the genome sequence is altered (A vs G at a single position).
+
+![Genetic Variant Example]("C:\Users\wbraz\Downloads\geneticvariants.png")
+
+### Genome Wide Association Studies can aid in the determination of which genetic variants are associated with an illness or trait of interest.
+
+In order to make statements on whether or not a genetic variant is associated with the trait of interest, we utilize hypothesis testing.
 
 
-Power of GWAS
+## Hypothesis Testing Review
+
+
