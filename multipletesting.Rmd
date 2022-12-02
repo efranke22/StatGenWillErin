@@ -18,7 +18,9 @@ If we compare any two human genomes, they are nearly identical. However, places 
 
 <u>SNVs</u> : DNA variation that occurs when a single nucleotide in the genome sequence is altered (A vs G at a single position).
 
+<center>
 ![Genetic Variant Example](geneticvariants.png){width=40%}
+</center>
 
 ### Genome Wide Association Studies can aid in the determination of which genetic variants are associated with an illness or trait of interest.
 
