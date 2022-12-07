@@ -7,8 +7,10 @@ navbar:
   right:
     - text: "Hypothesis Testing Background"
       href: multipletesting.html
-    - text: "Using PLINK"
-      href: plink.html
+    - text: "Data"
+      href: data.html
     - text: "Data Analysis"
-      href: hapmapAnalysis.html
+      href: analysisR.html
+    - text: "Hypothesis Testing in PLINK"
+      href: HapMapPlink.html
 output: distill::distill_article
