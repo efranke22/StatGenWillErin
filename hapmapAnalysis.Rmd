@@ -19,47 +19,75 @@ library(snpStats)
 library(NatParksPalettes)
 ```
 
-### Load hapmap data
+https://www.bioconductor.org/packages/devel/bioc/vignettes/SNPRelate/inst/doc/SNPRelate.html
+http://sites.tufts.edu/cbi/files/2013/02/GWAS_Exercise6_Stratification.pdf
 
-Create a null trait and write a file to the plink data folder.
+# Hapmap data
+
+## Data loading 
 
 ```{r}
-fam <- 'plinkData/HapMap_3_r3_1.fam'
-bim <- 'plinkData/HapMap_3_r3_1.bim'
-bed <- 'plinkData/HapMap_3_r3_1.bed'
+fam <- 'hapmapData/HapMap_3_r3_1.fam'
+bim <- 'hapmapData/HapMap_3_r3_1.bim'
+bed <- 'hapmapData/HapMap_3_r3_1.bed'
 
 hapmap <- read.plink(bed, bim, fam)
 ```
 
+## Create manhattan plot
+
+Create a null trait and write a file to the plink data folder.
+
 ```{r}
-manhattan_data <- cbind(hapmap$fam %>% select(1:2), trait = rnorm(n = 165, mean = 0, sd = 1))
-write_delim(manhattan_data, "plinkData/manhattandata")
+hapmap_nulltrait <- cbind(hapmap$fam, trait = rnorm(n = 165, mean = 0, sd = 1)) %>%
+  dplyr::select(pedigree, member, trait)
+write_delim(hapmap_nulltrait, "hapmapData/hapmap_nulltrait")
 ```
 
-Use command to run GWAS in PLINK, accounting for correlated SNPs
-- ./plink --bfile HapMap_3_r3_1 --assoc --adjust --pheno manhattandata --out as2
+In PLINK run ./plink --bfile HapMap_3_r3_1 --assoc --adjust --pheno hapmap_nulltrait --out as2
 
-Read in results from PLINK and create Manhattan plot
+Read in results from PLINK:
 
 ```{r}
-results <- read_table("plinkData/as2.qassoc.adjusted")
+hapmap_adjusted <- read_table("hapmapData/as2.qassoc.adjusted")
+hapmap_unadjusted <- read_table("hapmapData/as2.qassoc")
 
-results_with_position <- results %>%
+results_with_position_adjusted <- hapmap_adjusted %>%
   mutate(CHR = as.integer(CHR)) %>%
   left_join(hapmap$map %>%
-              select(snp.name, position, chromosome), by = c("SNP" = "snp.name", "CHR" = "chromosome"))
+              dplyr::select(snp.name, position, chromosome), by = c("SNP" = "snp.name", "CHR" = "chromosome"))
+
+results_with_position_unadjusted <- hapmap_unadjusted %>%
+  mutate(CHR = as.integer(CHR)) %>%
+  left_join(hapmap$map %>%
+              dplyr::select(snp.name, position, chromosome), by = c("SNP" = "snp.name", "CHR" = "chromosome"))
 ```
 
-82146
+Create manhattan plot for adjusted and unadjusted results
+
 ```{r, cache=TRUE}
-results_with_position %>%
+results_with_position_adjusted %>%
   mutate(minuslogp = -log10(GC),
          CHR = as.factor(CHR)) %>%
   ggplot(aes(x = CHR, y = minuslogp, group = interaction(CHR, position), color = CHR)) + 
   geom_point(position = position_dodge(0.8)) + 
   labs(x = 'chromosome', y = expression(paste('-log'[10],'(p-value)')))+
   theme_classic()+
-  geom_hline(yintercept = 7.135789, color = "navy", linetype = "dashed")+
+  geom_hline(yintercept = 7.081506, color = "navy", linetype = "dashed")+
+  geom_hline(yintercept = 1.30103, color = "navy", linetype = "dashed")+
+  scale_color_manual(values=natparks.pals("DeathValley",24))+
+  theme(legend.position = "none")
+```
+
+```{r}
+results_with_position_unadjusted %>%
+  mutate(minuslogp = -log10(GC),
+         CHR = as.factor(CHR)) %>%
+  ggplot(aes(x = CHR, y = minuslogp, group = interaction(CHR, position), color = CHR)) + 
+  geom_point(position = position_dodge(0.8)) + 
+  labs(x = 'chromosome', y = expression(paste('-log'[10],'(p-value)')))+
+  theme_classic()+
+  geom_hline(yintercept = 7.081506, color = "navy", linetype = "dashed")+
   geom_hline(yintercept = 1.30103, color = "navy", linetype = "dashed")+
   scale_color_manual(values=natparks.pals("DeathValley",24))+
   theme(legend.position = "none")
@@ -67,7 +95,7 @@ results_with_position %>%
 
 ## Complete replications
 
-Simulation based approach. Approximately 14.45 minutes to run GWAS in plink, then 3 minutes 20 seconds to load files into R. 
+Determine a threshold using simulation. Create a function to generate a quantative trait 165 times. Next, replicate that trait 1000 times and bind it the memberId and pedigree information. Write this file to folder to use in plink
 
 ```{r, eval=FALSE}
 create_quantitative_trait <- function(i){
@@ -76,16 +104,18 @@ create_quantitative_trait <- function(i){
 
 traits <- as.data.frame(replicate(1000, create_quantitative_trait()))
 
-traits_identified <- cbind(hapmap$fam %>%
-        select(1:2), traits)
+hapmap_traits <- cbind(hapmap$fam %>%
+        dplyr::select(1:2), traits)
 
-write_delim(traits_identified, "plinkData/traits_identified")
+write_delim(hapmap_traits, "hapmapData/hapmap_traits")
 ```
 
-./plink --bfile HapMap_3_r3_1 --assoc --pheno traits_identified --all-pheno --pfilter 1e-3
+In plink, run ./plink --bfile HapMap_3_r3_1 --assoc --pheno hapmap_traits --all-pheno --pfilter 1e-3
+
+Running that PLINK command takes about 15 minutes. Load the data files back into RStudio (takes about 3 minutes). Take the minimum p-value in each file and plot the distribution. Take the 5% quantile of the minimum p-values: this is our threshold.
 
 ```{r, cache=TRUE}
-dataFiles <- lapply(Sys.glob("plinkData/plink.P*.qassoc"), read_table)
+dataFiles <- lapply(Sys.glob("hapmapData/plink.P*.qassoc"), read_table)
 
 pvalues <- sapply(dataFiles, function(x) min(x$P, na.rm=TRUE))
 
@@ -106,3 +136,186 @@ as.data.frame(pvalues) %>%
 quantile(pvalues, 0.05)
 ```
 
+We get a threshold of 8.28885e-08 for the Hapmap data.
+
+# R-bloggers Data
+
+In PLINK, run plink --merge-list allfiles.txt --make-bed --out rbloggersComb
+
+```{r}
+load("rbloggersData/conversionTable.RData")
+
+pathM <- paste("rbloggersData/108Malay_2527458snps", c(".bed", ".bim", ".fam"), sep = "")
+SNP_M <- read.plink(pathM[1], pathM[2], pathM[3])
+
+pathI <- paste("rbloggersData/105Indian_2527458snps", c(".bed", ".bim", ".fam"), sep = "")
+SNP_I <- read.plink(pathI[1], pathI[2], pathI[3])
+
+pathC <- paste("rbloggersData/110Chinese_2527458snps", c(".bed", ".bim", ".fam"), sep = "")
+SNP_C <- read.plink(pathC[1], pathC[2], pathC[3])
+
+rbloggers_fam <- rbind(SNP_M$fam, SNP_I$fam, SNP_C$fam)
+rbloggers_map <- rbind(SNP_M$map, SNP_I$map, SNP_C$map)
+```
+
+```{r}
+rbloggers_nulltrait <- cbind(rbloggers_fam %>% dplyr::select(1:2), trait = rnorm(n = 323, mean = 0, sd = 1))
+write_delim(rbloggers_nulltrait, "rbloggersData/rbloggers_nulltrait")
+```
+
+In PLINK run ./plink --bfile rbloggersComb --assoc --adjust --pheno rbloggers_nulltrait --out as2
+
+Read in results from PLINK:
+
+```{r}
+rbloggers_adjusted <- read_table("rbloggersData/as2.qassoc.adjusted")
+rbloggers_unadjusted <- read_table("rbloggersData/as2.qassoc")
+
+rbloggers_adjusted_position <- rbloggers_adjusted%>%
+  mutate(CHR = as.integer(CHR)) %>%
+  left_join(rbloggers_map %>%
+              dplyr::select(snp.name, position, chromosome), by = c("SNP" = "snp.name", "CHR" = "chromosome"))
+
+rbloggers_unadjusted_position <- rbloggers_unadjusted%>%
+  mutate(CHR = as.integer(CHR)) %>%
+  left_join(rbloggers_map %>%
+              dplyr::select(snp.name, position, chromosome), by = c("SNP" = "snp.name", "CHR" = "chromosome"))
+```
+
+Create manhattan plots:
+
+```{r, cache=TRUE}
+rbloggers_adjusted_position %>%
+  mutate(minuslogp = -log10(GC),
+         CHR = as.factor(CHR)) %>%
+  ggplot(aes(x = CHR, y = minuslogp, group = interaction(CHR, position), color = CHR)) + 
+  geom_point(position = position_dodge(0.8)) + 
+  labs(x = 'chromosome', y = expression(paste('-log'[10],'(p-value)')))+
+  theme_classic()+
+  geom_hline(yintercept = 7.26566, color = "navy", linetype = "dashed")+
+  geom_hline(yintercept = 1.30103, color = "navy", linetype = "dashed")+
+  scale_color_manual(values=natparks.pals("DeathValley",24))+
+  theme(legend.position = "none")
+```
+
+## Complete replications
+
+```{r, eval=FALSE}
+create_quantitative_trait <- function(i){
+  y <- rnorm(n = 323, mean = 0, sd = 1) 
+}
+
+traits <- as.data.frame(replicate(1000, create_quantitative_trait()))
+
+rbloggers_traits <- cbind(rbloggers_fam %>%
+        dplyr::select(1:2), traits)
+
+write_delim(rbloggers_traits, "rbloggersData/rbloggers_traits")
+```
+
+./plink --bfile rbloggersComb --assoc --pheno rbloggers_traits --all-pheno --pfilter 1e-3
+
+```{r, cache=TRUE}
+dataFiles <- lapply(Sys.glob("rbloggersData/plink.P*.qassoc"), read_table)
+
+pvalues <- sapply(dataFiles, function(x) min(x$P, na.rm=TRUE))
+
+as.data.frame(pvalues) %>%
+  ggplot(aes(x=pvalues))+
+  geom_density(fill = "cadetblue")+
+  theme_classic()+
+  annotate(geom = "text", color = "red", x = 1e-05, y = 250000, label = "0.05 quantile:\n7.31495e-08", family = "mono", cex = 3)+
+  geom_vline(xintercept = 7.31495e-08, color = "red", linetype = "dashed")+
+  labs(x="P-values", y = "Density", title = "Distribution of minimum p-values for 1000 replications")+
+  geom_curve(aes(x = 1e-05, y = 270000, xend = 1e-06, yend = 350000), 
+             arrow = arrow(length = unit(0.03, "npc")), curvature = 0.3, color = "red")+
+  theme(plot.title.position = "plot", 
+        plot.title = element_text(family = "mono"), 
+        axis.title = element_text(family = "mono"), 
+        axis.text = element_text(family = "mono"))
+
+quantile(pvalues, 0.05)
+```
+
+5.42425e-08
+
+# Finally, R-bloggers data with varying populations
+
+Create a trait varying between the populations
+
+```{r}
+rbloggers_poptrait <- cbind(rbloggers_fam %>% select(1:2), trait = c(rnorm(n = 108, mean = 0, sd = 1), rnorm(105, -1, sd = 1), rnorm(110, 1, 1)))
+write_delim(rbloggers_poptrait, "rbloggersSep/rbloggers_poptrait")
+```
+
+In PLINK run ./plink --bfile rbloggersComb --assoc --adjust --pheno rbloggers_poptrait --out as2
+
+```{r}
+rbloggersSep_adjusted <- read_table("rbloggersSep/as2.qassoc.adjusted")
+rbloggersSep_unadjusted <- read_table("rbloggersSep/as2.qassoc")
+
+rbloggersSep_adjusted_position <- rbloggersSep_adjusted%>%
+  mutate(CHR = as.integer(CHR)) %>%
+  left_join(rbloggers_map %>%
+              dplyr::select(snp.name, position, chromosome), by = c("SNP" = "snp.name", "CHR" = "chromosome"))
+
+rbloggersSep_unadjusted_position <- rbloggersSep_unadjusted%>%
+  mutate(CHR = as.integer(CHR)) %>%
+  left_join(rbloggers_map %>%
+              dplyr::select(snp.name, position, chromosome), by = c("SNP" = "snp.name", "CHR" = "chromosome"))
+```
+
+```{r, cache=TRUE}
+rbloggersSep_adjusted_position %>%
+  mutate(minuslogp = -log10(GC),
+         CHR = as.factor(CHR)) %>%
+  ggplot(aes(x = CHR, y = minuslogp, group = interaction(CHR, position), color = CHR)) + 
+  geom_point(position = position_dodge(0.8)) + 
+  labs(x = 'chromosome', y = expression(paste('-log'[10],'(p-value)')))+
+  theme_classic()+
+  geom_hline(yintercept = 7.245961, color = "navy", linetype = "dashed")+
+  geom_hline(yintercept = 1.30103, color = "navy", linetype = "dashed")+
+  scale_color_manual(values=natparks.pals("DeathValley",24))+
+  theme(legend.position = "none")
+```
+
+## Complete replications
+
+```{r, eval=FALSE}
+create_quantitative_trait <- function(i){
+  c(rnorm(n = 108, mean = 0, sd = 1), rnorm(105, -1, sd = 1), rnorm(110, 1, 1)) 
+}
+
+traits <- as.data.frame(replicate(1000, create_quantitative_trait()))
+
+rbloggers_Poptraits <- cbind(rbloggers_fam %>%
+        dplyr::select(1:2), traits)
+
+write_delim(rbloggers_Poptraits, "rbloggersSep/rbloggers_Poptraits")
+```
+
+./plink --bfile rbloggersComb --assoc --pheno rbloggers_Poptraits --all-pheno --pfilter 1e-3
+
+Read files back into R
+
+```{r, cache=TRUE}
+dataFiles <- lapply(Sys.glob("rbloggersSep/plink.P*.qassoc"), read_table)
+
+pvalues <- sapply(dataFiles, function(x) min(x$P, na.rm=TRUE))
+
+as.data.frame(pvalues) %>%
+  ggplot(aes(x=pvalues))+
+  geom_density(fill = "cadetblue")+
+  theme_classic()+
+  annotate(geom = "text", color = "red", x = 1e-05, y = 250000, label = "0.05 quantile:\n7.31495e-08", family = "mono", cex = 3)+
+  geom_vline(xintercept = 7.31495e-08, color = "red", linetype = "dashed")+
+  labs(x="P-values", y = "Density", title = "Distribution of minimum p-values for 1000 replications")+
+  geom_curve(aes(x = 1e-05, y = 270000, xend = 1e-06, yend = 350000), 
+             arrow = arrow(length = unit(0.03, "npc")), curvature = 0.3, color = "red")+
+  theme(plot.title.position = "plot", 
+        plot.title = element_text(family = "mono"), 
+        axis.title = element_text(family = "mono"), 
+        axis.text = element_text(family = "mono"))
+
+quantile(pvalues, 0.05)
+```

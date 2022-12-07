@@ -1,0 +1,195 @@
+---
+title: "Data Analysis"
+description: |
+     More on multiple hypothesis testing on how to do it in RStudio with sample data
+site: distill::distill_website
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Learn more about creating websites with Distill at:
+# https://rstudio.github.io/distill/website.html
+```
+
+This page will go through an example of what the multiple hypothesis testing procedure looks like for a sample set of data. Before reviewing this section, please visit [Data](https://multipletestingextension.netlify.app/data.html) to learn more about the dataset we are using the cleaning steps necessary to perform this analysis.
+
+```{r, echo=FALSE}
+library(snpStats)
+library(tidyverse)
+library(broom)
+library(NatParksPalettes)
+library(parallel)
+library(GGally)  
+
+fam <- 'hapmapData/HapMap_3_r3_1.fam'
+bim <- 'hapmapData/HapMap_3_r3_1.bim'
+bed <- 'hapmapData/HapMap_3_r3_1.bed'
+
+hapmap <- read.plink(bed, bim, fam)
+
+#calculate MAF
+maf <- col.summary(hapmap$genotypes)$MAF
+
+# add new MAF variable to map
+map <- hapmap$map %>%
+  mutate(MAF = maf) %>%
+  filter(maf >0 )
+
+X <- as(hapmap$genotypes, "numeric")
+
+map.clean <- map %>%
+  filter(MAF >0)
+X.clean <- X[,colnames(X) %in% map.clean$snp.name]
+```
+
+
+# The limit of Bonferroni
+
+As discussed in the [Hypothesis Testing Background](https://multipletestingextension.netlify.app/multipletesting.html) section, multiple hypothesis testing is a necessary part of statistical analyses. It helps us determine the correct threshold for selecting SNPs to devote further time and resources to studying as using the standard 0.05 threshold would lead to falsely asserting relationships between a SNP and the trait of interest far too often (too many Type I errors).
+
+While Bonferroni is a great way to get an approximate threshold for a given number of SNPs, it is flawed because it treats all SNPs as independent of one another. In reality, SNPs are correlated with each other and the extent of that correlation depends on the data. This is known as the concept of **linkage disequalibrium**, which as stated in [Science Direct](https://www.sciencedirect.com/topics/neuroscience/linkage-disequilibrium) is the idea that two markers in close physical proximity are correlated in a population and are in association more than would be expected with random assortment. Essentially, SNPs next to each other are much more similar than SNPs far away from each other. 
+
+We can show this concept of correlation with our data. To do this, we will use the SnpMatrix in which our data is stored. As mentioned in the [Data](https://multipletestingextension.netlify.app/data.html) section, each row is one of the 165 members of this study, and each column is one of our 1,457,897 SNPs.
+
+```{r}
+hapmap$genotypes
+```
+
+1,457,897 SNPs is a big number, and it would be hard to show the correlation when all of them. As a result, we just show the linkage disequalibrium matrix below for the first 100 polymorphic SNPs on chromosome 1. The diagonal line moving from the top left corner of the plot to the bottom right corner represents each SNP's correlation with itself, and therefore is filled in as white square. What you can notice from this plot is that SNPs that are nearby each other (bordering the white diagonal line) are often represented in orange, meaning they are highly correlated. 
+
+```{r}
+chr1_100 <- hapmap$genotypes[1:165, 1:119]
+color.pal <- natparks.pals("Acadia", 10)
+
+#get monomorphic SNPs only
+maf_chr1_100 <- col.summary(chr1_100)$MAF
+mono <- which(maf_chr1_100 == 0)
+
+# calculate LD on polymorphic SNPs only
+hapmap.ld.nomono <- ld(chr1_100[,-mono], depth = 118-length(mono), stats = "R.squared", symmetric = TRUE)
+
+# plot 
+image(hapmap.ld.nomono, lwd = 0, cuts = 9, col.regions = color.pal, colorkey = TRUE)
+```
+
+While the first 100 polymorphic SNPs from this HapMap dataset have the linkage disequilibrium matrix shown above, if we were to look at another dataset it might look completely different. For example, the linkage disequilibrium matrix for the first 100 SNPs from a dataset from [Rbloggers](https://www.r-bloggers.com/2017/10/genome-wide-association-studies-in-r/) looks like this:
+
+```{r, echo=FALSE}
+load("rbloggersData/conversionTable.RData")
+
+pathM <- paste("rbloggersData/108Malay_2527458snps", c(".bed", ".bim", ".fam"), sep = "")
+SNP_M <- read.plink(pathM[1], pathM[2], pathM[3])
+
+pathI <- paste("rbloggersData/105Indian_2527458snps", c(".bed", ".bim", ".fam"), sep = "")
+SNP_I <- read.plink(pathI[1], pathI[2], pathI[3])
+
+pathC <- paste("rbloggersData/110Chinese_2527458snps", c(".bed", ".bim", ".fam"), sep = "")
+SNP_C <- read.plink(pathC[1], pathC[2], pathC[3])
+
+SNP <- rbind(SNP_M$genotypes, SNP_I$genotypes, SNP_C$genotypes)
+
+chr1_100_3 <- SNP[1:323, 1:262]
+color.pal <- natparks.pals("Acadia", 10)
+
+#get monomorphic SNPs only
+maf_chr1_100_3 <- col.summary(chr1_100_3)$MAF
+mono2 <- which(maf_chr1_100_3 == 0)
+
+# calculate LD on polymorphic SNPs only
+hapmap.ld.nomono2 <- ld(chr1_100_3[,-mono2], depth = 261-length(mono2), stats = "R.squared", symmetric = TRUE)
+
+# plot 
+image(hapmap.ld.nomono2, lwd = 0, cuts = 9, col.regions = color.pal, colorkey = TRUE)
+```
+
+The reason we are showing these correlation matrices is to demonstrate that different studies have different levels of correlation in the data. The more similar SNPs are, the fewer hypothesis tests effectively conducted and thus the higher the threshold can be. Therefore, even with the same number of SNPs in two different studies, thresholds can vary quite a bit. The method to determine the right threshold for your data therefore must be done using **simulation**.
+
+# Determining a threshold with simulation in RStudio
+
+The process for determining a threshold is as follows: 
+
+1. Simulate a null trait, meaning a trait not associated with any of the SNPs. \
+2. Run GWAS to test the association between the simulated null trait and each SNP in our dataset. After that record the smallest p-value from this GWAS. \
+3. Repeat steps 1 and 2 many times, typically 1,000-10,000 times in professional genetic studies. \
+4. Look at the p-values saved from those simulation replicates. Sort them from smallest to largest and find the number at which 5% (desired FWER) of p-values are smaller than that number. This is the significance threshold. \
+
+Let's break this down step by step. 
+
+### Step One
+
+The first step is simulate a null trait, meaning a trait not associated with any SNPs. We call this trait `y`, and generate 165 data points with a mean of 0 and standard deviation of 1.
+
+```{r}
+y = rnorm(n = 165, mean = 0, sd = 1)
+```
+
+### Step Two
+
+Next, we run a GWAS to test the association between the simulated null trait `y` and each SNP in our dataset. To do this, we use marginal regression and fit a model with the SNP as the single independent variable and the trait of interest as the dependent variable.  Looking at our first three SNPs, the models can be created as shown in the code chunk below. If you don't have `X.clean` in your R environment, go run the code in the [Data](https://multipletestingextension.netlify.app/data.html) section.
+
+```{r}
+set.seed(494)
+snp1mod <- lm(y ~ X.clean[,1])
+snp2mod <- lm(y ~ X.clean[,2])
+snp3mod <- lm(y ~ X.clean[,3])
+
+tidy(snp1mod)
+```
+
+Each of these models produces an estimate for the coefficient on the SNP. For example, the coefficient for `snp1mod` is 0.094. The way we might interpret this is that for every additional minor allele (G for example) that you carry at that position, the trait of interest changes by about 0.094 units. If the trait we were measuring was height, we would expect your height to increase about 0.094 inches for every additional minor allele (a value of either 0, 1, or 2) at SNP 1.
+
+Obviously, we cannot do the process above by hand for over one million SNPs (which is necessary to complete 1 GWAS). However, we can do this with a loop! This code loops through each of the SNPs, fitting a linear regression model at each one. For each model, we record the estimates (`betas`), standard errors (`ses`), test statistics (`tstats`) and p-values (`pvals`) for the coefficient of interest, which is the slope.
+
+*Warning: this code may take 30-60 minutes to run. Feel free to read over the rest of this step but skip running any code*.
+
+```{r}
+# set up empty vectors for storing results
+betas <- c()
+ses <- c()
+tstats <- c()
+pvals <- c()
+
+# loop through all SNPs
+for(i in 1:ncol(X.clean)){ 
+  # fit model
+  mod <- lm(y ~ X.clean[,i])
+  # get coefficient information
+  coefinfo <- tidy(mod)
+  # record estimate, SE, test stat, and p-value
+  betas[i] <- coefinfo$estimate[2]
+  ses[i] <- coefinfo$std.error[2]
+  tstats[i] <- coefinfo$statistic[2]
+  pvals[i] <- coefinfo$p.value[2]
+}
+```
+
+Next we record add our results to our `map.clean` data frame that contains information about each SNP:
+
+```{r}
+all.results <- map.clean %>%
+  mutate(Estimate = betas,
+         Std.Error = ses,
+         Test.Statistic = tstats,
+         P.Value = pvals)
+
+head(all.results)
+```
+
+We then arrange the p-values from smallest to largest and record the smallest one.
+
+```{r}
+all.results %>%
+  arrange(P.value) %>%
+  head(1)
+```
+
+If this procedure was done with our trait of interest, an additional step to complete this GWAS might be to create a Manhattan plot which shows the p-values of all SNPs in our dataset. If a p-value is less than a threshold we have set, it should stand out on the plot and prompt further analysis. We will talk more about these Manhattan plots later on, once we have completed multiple hypothesis testing and determined a threshold.
+
+### Step 3
+
+Step 3 is to repeat steps 1 and 2 many times, typically 1,000-10,000 times in professional genetic studies. But wait - did you run the GWAS above on your computer? If so, it probably took 30 - 60 minutes. In order to complete even 1000 replications at 30 minutes, it would take 20.83 days on a single computer. 10,000 replications would take about 7 months. As a result, this process is not feasible in RStudio!
+
+
+
+

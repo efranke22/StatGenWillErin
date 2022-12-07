@@ -1,18 +1,13 @@
 ---
-title: "Understanding genetic data with PLINK"
+title: "Multiple Hypothesis Testing in PLINK"
 description: |
-    How we used PLINK to make analyzing genetic data more computationally efficient
+     How to use a more computationally efficient software to determine a threshold
 site: distill::distill_website
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = TRUE)
 
 # Learn more about creating websites with Distill at:
 # https://rstudio.github.io/distill/website.html
-```
-
-
-```{r}
-
 ```
