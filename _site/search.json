@@ -46,7 +46,7 @@
       "description": "An explanation of the complexities to making statistically significant conclusions when working with genetic data \n",
       "author": [],
       "contents": "\nGenome Wide Association Studies\nIf we compare any two human genomes, they are nearly identical. However, places where DNA sequences differ are known as genetic variants. There are multiple types of genetic variants, but our work is primarily focused on single nucleotide variants (SNVs).\nSNVs : DNA variation that occurs when a single nucleotide in the genome sequence is altered (A vs G at a single position).\n\nGenetic Variant Example\nGenome Wide Association Studies can aid in the determination of which genetic variants are associated with an illness or trait of interest.\nIn order to make statements on whether or not a genetic variant is associated with the trait of interest, we utilize hypothesis testing.\nHypothesis Testing Review\n\n\n\n",
-      "last_modified": "2022-12-07T16:14:03-06:00"
+      "last_modified": "2022-12-07T18:20:26-06:00"
     }
   ],
   "collections": []
