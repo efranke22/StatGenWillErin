@@ -143,7 +143,7 @@ Obviously, we cannot do the process above by hand for over one million SNPs (whi
 
 *Warning: this code may take 30-60 minutes to run. Feel free to read over the rest of this step but skip running any code*.
 
-```{r}
+```{r, eval=FALSE}
 # set up empty vectors for storing results
 betas <- c()
 ses <- c()
@@ -166,7 +166,7 @@ for(i in 1:ncol(X.clean)){
 
 Next we record add our results to our `map.clean` data frame that contains information about each SNP:
 
-```{r}
+```{r, eval=FALSE}
 all.results <- map.clean %>%
   mutate(Estimate = betas,
          Std.Error = ses,
@@ -178,7 +178,7 @@ head(all.results)
 
 We then arrange the p-values from smallest to largest and record the smallest one.
 
-```{r}
+```{r,eval=FALSE}
 all.results %>%
   arrange(P.value) %>%
   head(1)
