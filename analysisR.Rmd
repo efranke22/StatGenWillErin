@@ -137,7 +137,7 @@ snp3mod <- lm(y ~ X.clean[,3])
 tidy(snp1mod)
 ```
 
-Each of these models produces an estimate for the coefficient on the SNP. For example, the coefficient for `snp1mod` is 0.094. The way we might interpret this is that for every additional minor allele (G for example) that you carry at that position, the trait of interest changes by about 0.094 units. If the trait we were measuring was height, we would expect your height to increase about 0.094 inches for every additional minor allele (a value of either 0, 1, or 2) at SNP 1.
+Each of these models produces an estimate for the coefficient on the SNP. For example, the coefficient for `snp1mod` is 0.12. The way we might interpret this is that for every additional minor allele (G for example) that you carry at that position, the trait of interest changes by about 0.12 units. If the trait we were measuring was height, we would expect your height to increase about 0.12 inches for every additional minor allele (a value of either 0, 1, or 2) at SNP 1.
 
 Obviously, we cannot do the process above by hand for over one million SNPs (which is necessary to complete 1 GWAS). However, we can do this with a loop! This code loops through each of the SNPs, fitting a linear regression model at each one. For each model, we record the estimates (`betas`), standard errors (`ses`), test statistics (`tstats`) and p-values (`pvals`) for the coefficient of interest, which is the slope.
 
@@ -176,20 +176,51 @@ all.results <- map.clean %>%
 head(all.results)
 ```
 
-We then arrange the p-values from smallest to largest and record the smallest one.
+![](images/gwasResults.png)
 
-```{r,eval=FALSE}
-all.results %>%
-  arrange(P.value) %>%
-  head(1)
-```
+We then arrange the p-values from smallest to largest and record the smallest one. In this trial, the smallest p-value was $4 \times 10^{-7}$.
 
 If this procedure was done with our trait of interest, an additional step to complete this GWAS might be to create a Manhattan plot which shows the p-values of all SNPs in our dataset. If a p-value is less than a threshold we have set, it should stand out on the plot and prompt further analysis. We will talk more about these Manhattan plots later on, once we have completed multiple hypothesis testing and determined a threshold.
 
 ### Step 3
 
-Step 3 is to repeat steps 1 and 2 many times, typically 1,000-10,000 times in professional genetic studies. But wait - did you run the GWAS above on your computer? If so, it probably took 30 - 60 minutes. In order to complete even 1000 replications at 30 minutes, it would take 20.83 days on a single computer. 10,000 replications would take about 7 months. As a result, this process is not feasible in RStudio!
+Step 3 is to repeat steps 1 and 2 many times, typically 1,000-10,000 times in professional genetic studies. But wait - did you run the GWAS above on your computer? If so, it probably took 30 - 60 minutes. In order to complete even 1000 replications at 30 minutes, it would take about 20.83 days on a single computer (we tested this and that number was accurate). 10,000 replications would take about 7 months, which we did not test (thankfully). As a result, this process is not feasible in RStudio! However, we will put the code below for 1000 replications in case you are tempted.
 
+One thing this code does do is utilize the function `mclapply()` from the `parallel` package. This package will work to utilize all cores of your computer to the run code. The computer this code was run on only has two cores, but for computers with 8-10 cores this package could make a significant difference in computational time (perhaps on the level of 8-10x faster if nothing else is running in the background). However, even 8-10x faster will still result in it taking at least a few days to determine a threshold with 1000 replications.
 
+```{r, eval=FALSE}
+dim(X.clean)
+do_one_sim<- function(i){
+  
+  # simulate null trait
+  y <- rnorm(n = 165, mean = 0, sd = 1) # n= number people in study
+  
+  # implement GWAS
+  pvals <- c()
+  for(i in 1:1283751){ #number SNPs in X.clean
+    mod <- lm(y ~ snp[,i])
+    pvals[i] <- tidy(mod)$p.value[2]
+  }
+  # record smallest p-value
+  min(pvals)
+}
+
+# Do 1000 replications with mclapply()
+set.seed(494)
+simresmclapply <- mclapply(1:1000, do_one_sim, mc.cores = 2) 
+```
+
+### Step 4
+
+If you for some reason decided to run the code in Step 3, you could run the following code chunk to get the threshold for the family wise error rate of 5%. This is the significance threshold!
+
+```{r, eval=FALSE}
+# Print the 0.05 quantile 
+quantile(simresmclapply %>% as.data.frame(), 0.05)
+```
+
+# A computationally efficient solution
+
+In order to avoiding spending days of times and heavily comprising computer efficiency, we will demonstrate how to get threshold in PLINK. To learn more about PLINK and how to use it, check out the [Hypothesis Testing in PLINK](https://multipletestingextension.netlify.app/hapmapplink) tab.
 
 
