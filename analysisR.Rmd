@@ -1,7 +1,7 @@
 ---
 title: "Data Analysis"
 description: |
-     More on multiple hypothesis testing on how to do it in RStudio with sample data
+     More on multiple hypothesis testing on how to do it in RStudio with the HapMap data.
 site: distill::distill_website
 ---
 
@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # https://rstudio.github.io/distill/website.html
 ```
 
-This page will go through an example of what the multiple hypothesis testing procedure looks like for a sample set of data. Before reviewing this section, please visit [Data](https://multipletestingextension.netlify.app/data.html) to learn more about the dataset we are using the cleaning steps necessary to perform this analysis.
+This page will go through an example of what the multiple hypothesis testing procedure looks like in RStudio with the HapMap data. Before reviewing this section, please visit the [Data](https://multipletestingextension.netlify.app/data.html) tab to learn more about the dataset we are using the cleaning steps necessary to perform this analysis as well as load the data into your RStudio environment.
 
 ```{r, echo=FALSE}
 library(snpStats)
@@ -114,7 +114,7 @@ The process for determining a threshold is as follows:
 3. Repeat steps 1 and 2 many times, typically 1,000-10,000 times in professional genetic studies. \
 4. Look at the p-values saved from those simulation replicates. Sort them from smallest to largest and find the number at which 5% (desired FWER) of p-values are smaller than that number. This is the significance threshold. \
 
-Let's break this down step by step. 
+We will break this down step by step. 
 
 ### Step One
 
@@ -213,7 +213,7 @@ simresmclapply <- mclapply(1:1000, do_one_sim, mc.cores = 2)
 
 ### Step 4
 
-If you for some reason decided to run the code in Step 3, you could run the following code chunk to get the threshold for the family wise error rate of 5%. This is the significance threshold!
+If you for some reason decided to run the code in Step 3, you could run the following code chunk to get the threshold for the family wise error rate of 5%. This is the significance threshold! The threshold we got after 21 days was $7.83 \times 10^{-8}$.
 
 ```{r, eval=FALSE}
 # Print the 0.05 quantile 

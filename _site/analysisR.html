@@ -90,27 +90,27 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--radix_placeholder_meta_tags-->
   <title>Home: Data Analysis</title>
 
-  <meta property="description" itemprop="description" content="More on multiple hypothesis testing on how to do it in RStudio with sample data"/>
+  <meta property="description" itemprop="description" content="More on multiple hypothesis testing on how to do it in RStudio with the HapMap data."/>
 
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
   <meta property="og:title" content="Home: Data Analysis"/>
   <meta property="og:type" content="article"/>
-  <meta property="og:description" content="More on multiple hypothesis testing on how to do it in RStudio with sample data"/>
+  <meta property="og:description" content="More on multiple hypothesis testing on how to do it in RStudio with the HapMap data."/>
   <meta property="og:locale" content="en_US"/>
   <meta property="og:site_name" content="Home"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
   <meta property="twitter:title" content="Home: Data Analysis"/>
-  <meta property="twitter:description" content="More on multiple hypothesis testing on how to do it in RStudio with sample data"/>
+  <meta property="twitter:description" content="More on multiple hypothesis testing on how to do it in RStudio with the HapMap data."/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","site"]}},"value":[{"type":"character","attributes":{},"value":["Data Analysis"]},{"type":"character","attributes":{},"value":["More on multiple hypothesis testing on how to do it in RStudio with sample data\n"]},{"type":"character","attributes":{},"value":["distill::distill_website"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","site"]}},"value":[{"type":"character","attributes":{},"value":["Data Analysis"]},{"type":"character","attributes":{},"value":["More on multiple hypothesis testing on how to do it in RStudio with the HapMap data.\n"]},{"type":"character","attributes":{},"value":["distill::distill_website"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2094,7 +2094,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Data Analysis","description":"More on multiple hypothesis testing on how to do it in RStudio with sample data","authors":[]}
+{"title":"Data Analysis","description":"More on multiple hypothesis testing on how to do it in RStudio with the HapMap data.","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2121,12 +2121,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <h1>Data Analysis</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-<p><p>More on multiple hypothesis testing on how to do it in RStudio with sample data</p></p>
+<p><p>More on multiple hypothesis testing on how to do it in RStudio with the HapMap data.</p></p>
 </div>
 
 
 <div class="d-article">
-<p>This page will go through an example of what the multiple hypothesis testing procedure looks like for a sample set of data. Before reviewing this section, please visit <a href="https://multipletestingextension.netlify.app/data.html">Data</a> to learn more about the dataset we are using the cleaning steps necessary to perform this analysis.</p>
+<p>This page will go through an example of what the multiple hypothesis testing procedure looks like in RStudio with the HapMap data. Before reviewing this section, please visit the <a href="https://multipletestingextension.netlify.app/data.html">Data</a> tab to learn more about the dataset we are using the cleaning steps necessary to perform this analysis as well as load the data into your RStudio environment.</p>
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
@@ -2177,7 +2177,7 @@ Col names:  rs2185539 ... rs1973881 </code></pre>
 <li>Look at the p-values saved from those simulation replicates. Sort them from smallest to largest and find the number at which 5% (desired FWER) of p-values are smaller than that number. This is the significance threshold.<br />
 </li>
 </ol>
-<p>Let’s break this down step by step.</p>
+<p>We will break this down step by step.</p>
 <h3 id="step-one">Step One</h3>
 <p>The first step is simulate a null trait, meaning a trait not associated with any SNPs. We call this trait <code>y</code>, and generate 165 data points with a mean of 0 and standard deviation of 1.</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -2270,7 +2270,7 @@ Col names:  rs2185539 ... rs1973881 </code></pre>
 </div>
 </div>
 <h3 id="step-4">Step 4</h3>
-<p>If you for some reason decided to run the code in Step 3, you could run the following code chunk to get the threshold for the family wise error rate of 5%. This is the significance threshold!</p>
+<p>If you for some reason decided to run the code in Step 3, you could run the following code chunk to get the threshold for the family wise error rate of 5%. This is the significance threshold! The threshold we got after 21 days was <span class="math inline">\(7.83 \times 10^{-8}\)</span>.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Print the 0.05 quantile </span></span>
