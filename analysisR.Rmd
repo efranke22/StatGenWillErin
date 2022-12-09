@@ -213,7 +213,7 @@ simresmclapply <- mclapply(1:1000, do_one_sim, mc.cores = 2)
 
 ### Step 4
 
-If you for some reason decided to run the code in Step 3, you could run the following code chunk to get the threshold for the family wise error rate of 5%. This is the significance threshold! The threshold we got after 21 days was $7.83 \times 10^{-8}$.
+If you for some reason decided to run the code in Step 3, you could run the following code chunk to get the threshold for the family wise error rate of 5%. This is the significance threshold!
 
 ```{r, eval=FALSE}
 # Print the 0.05 quantile 
