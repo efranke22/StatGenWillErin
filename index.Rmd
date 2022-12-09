@@ -1,7 +1,7 @@
 ---
 title: "An Extension of Multiple Hypothesis Testing in Statistical Genetics"
 description: |
-  A project by Will Brazgel and Erin Franke exploring multiple hypothesis testing and using PLINK and R to efficiently execute it on genetic data
+  A project by Will Brazgel and Erin Franke exploring multiple hypothesis testing and using RStudio and PLINK to efficiently execute it on genetic data
 site: distill::distill_website
 ---
 
@@ -13,4 +13,13 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ```
 
-Introduce website structure and motivation
+On this website, we will introduce what multiple hypothesis testing is and why it is necessary for genetic data. We will then show an example of how to complete multiple hypothesis testing in both RStudio and PLINK. Our process should be relatively easy to follow for anyone that has taken an introductory statistics class. We recommend starting on the [Hypothesis Testing Background](https://multipletestingextension.netlify.app/multipletesting.html) tab and moving to the tabs on the right from there. Thanks for following along!
+
+![](images/intro.png)
+
+### Bibliography
+
+
+### Acknowledgements
+
+
