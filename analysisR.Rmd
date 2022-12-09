@@ -121,6 +121,7 @@ Let's break this down step by step.
 The first step is simulate a null trait, meaning a trait not associated with any SNPs. We call this trait `y`, and generate 165 data points with a mean of 0 and standard deviation of 1.
 
 ```{r}
+set.seed(494)
 y = rnorm(n = 165, mean = 0, sd = 1)
 ```
 
@@ -137,7 +138,7 @@ snp3mod <- lm(y ~ X.clean[,3])
 tidy(snp1mod)
 ```
 
-Each of these models produces an estimate for the coefficient on the SNP. For example, the coefficient for `snp1mod` is 0.12. The way we might interpret this is that for every additional minor allele (G for example) that you carry at that position, the trait of interest changes by about 0.12 units. If the trait we were measuring was height, we would expect your height to increase about 0.12 inches for every additional minor allele (a value of either 0, 1, or 2) at SNP 1.
+Each of these models produces an estimate for the coefficient on the SNP. For example, the coefficient for `snp1mod` is 0.094. The way we might interpret this is that for every additional minor allele (G for example) that you carry at that position, the trait of interest changes by about 0.094 units. If the trait we were measuring was height, we would expect your height to increase about 0.094 inches for every additional minor allele (a value of either 0, 1, or 2) at SNP 1.
 
 Obviously, we cannot do the process above by hand for over one million SNPs (which is necessary to complete 1 GWAS). However, we can do this with a loop! This code loops through each of the SNPs, fitting a linear regression model at each one. For each model, we record the estimates (`betas`), standard errors (`ses`), test statistics (`tstats`) and p-values (`pvals`) for the coefficient of interest, which is the slope.
 

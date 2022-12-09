@@ -12,4 +12,137 @@ knitr::opts_chunk$set(echo = TRUE)
 # https://rstudio.github.io/distill/website.html
 ```
 
-Explain PLINK here
+```{r, echo=FALSE}
+library(snpStats)
+library(tidyverse)
+library(broom)
+library(NatParksPalettes)
+library(parallel)
+library(GGally)   
+
+fam <- 'hapmapData/HapMap_3_r3_1.fam'
+bim <- 'hapmapData/HapMap_3_r3_1.bim'
+bed <- 'hapmapData/HapMap_3_r3_1.bed'
+
+hapmap <- read.plink(bed, bim, fam)
+
+X <- as(hapmap$genotypes, "numeric")
+```
+
+# Run a GWAS 
+
+## Step 1
+
+Select pedigree and member columns and bind them to the trait of interest.
+
+```{r}
+set.seed(494)
+y = cbind(hapmap$fam %>% select(1:2), X[,'rs2476601'] + rnorm(165, 0, 1))
+```
+
+## Step 2 
+
+Write the file to the folder with your data and the plink application
+
+```{r}
+write_delim(y, "plinkTutorial/trait")
+```
+
+## Step 3: 
+
+Run GWAS in plink
+
+./plink --bfile HapMap_3_r3_1 --assoc --adjust --pheno trait --out gwas1
+
+## Step 4
+
+Read in results and look at most significant SNPs
+
+```{r}
+gwas1 <- read_table("plinkTutorial/gwas1.qassoc.adjusted") %>%
+  arrange(GC)
+head(gwas1)
+```
+
+```{r}
+gwas1 <- gwas1 %>%
+  mutate(CHR = as.integer(CHR)) %>%
+  left_join(hapmap$map %>%
+              dplyr::select(snp.name, position, chromosome), by = c("SNP" = "snp.name", "CHR" = "chromosome"))
+```
+
+```{r}
+gwas1 %>%
+  mutate(minuslogp = -log10(GC),
+         CHR = as.factor(CHR)) %>%
+  ggplot(aes(x = CHR, y = minuslogp, group = interaction(CHR, position), color = CHR)) + 
+  geom_point(position = position_dodge(0.8)) + 
+  labs(x = 'chromosome', y = expression(paste('-log'[10],'(p-value)')))+
+  theme_classic()+
+  scale_color_manual(values=natparks.pals("DeathValley",24))+
+  theme(legend.position = "none")
+```
+
+# Run Multiple Testing in PLINK
+
+## Step 1
+
+Create a quantitative trait function and replicate it
+
+```{r, eval=FALSE}
+create_quantitative_trait <- function(i){
+  y <- rnorm(n = 165, mean = 0, sd = 1)
+}
+
+traits <- as.data.frame(replicate(20, create_quantitative_trait()))
+```
+
+## Step 2
+
+Select pedigree and member columns and bind them to all the traits.
+
+```{r}
+traitReps <- cbind(hapmap$fam %>%
+        dplyr::select(1:2), traits)
+```
+
+## Step 3
+
+Write the file to where the data is stored
+
+```{r}
+write_delim(traitReps, "plinkTutorial/traitReps")
+```
+
+## Step 4 
+
+Run multiple hypothesis testing in PLINK
+
+./plink --bfile HapMap_3_r3_1 --assoc --pheno traitReps --all-pheno --pfilter 1e-3
+
+## Step 5
+
+Reading the files that are created into RStudio
+
+```{r}
+dataFiles <- lapply(Sys.glob("plinkTutorial/plink.P*.qassoc"), read_table)
+```
+
+## Step 6
+
+Take the smallest p-value from each of the 20 genetic-wide association studies, and then take the 5% quantile (desired FWER) those 1000 smallest p-values. This gives us our threshold!
+
+```{r}
+pvalues <- sapply(dataFiles, function(x) min(x$P, na.rm=TRUE))
+quantile(pvalues, 0.05)
+```
+
+
+
+
+
+
+
+We saw in the [Data Analysis](https://multipletestingextension.netlify.app/analysisR.html) tab that it is very computationally inefficient to execute multiple hypothesis testing on genetic data in RStudio. However, there is is a solution, which is the software known as PLINK. PLINK is a free, open-source whole genome association analysis toolset, designed to perform a range of basic, large-scale analyses in a computationally efficient manner. To learn more about PLINK and how to download and use it, check out [this site](https://zzz.bwh.harvard.edu/plink/), which we relied heavily on. There are several different versions of PLINK online - once you download it, you should have a folder containing two black boxes: one called "plink" and one called "prettify". 
+
+Once downloaded onto your computer, PLINK runs from the terminal. We can run a GWAS in PLINK in a matter of a couple seconds instead of 30-60 minutes. 
