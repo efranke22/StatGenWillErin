@@ -31,7 +31,7 @@ X <- as(hapmap$genotypes, "numeric")
 
 Now that we have shown that RStudio is not a computationally efficient software for multiple hypothesis testing, we will show how to do it in PLINK. PLINK is a free, open-source whole genome association analysis toolset, designed to perform a range of basic, large-scale analyses in a computationally efficient manner. To learn more about PLINK and how to download and use it, check out [this site](https://zzz.bwh.harvard.edu/plink/), which we relied heavily on. There are several different versions of PLINK online - once you download it, you should have a folder containing two black boxes: one called "plink" and one called "prettify". Once downloaded onto your computer, PLINK runs from the terminal. We can run a GWAS in PLINK in a matter of a couple seconds instead of 30-60 minutes. 
 
-The first step of this is to shown how to run a GWAS in PLINK. Unlike in the example shown using RStudio, we will actually generate a trait of interest based off a particular causal SNP for this example GWAS.
+The first step of this is to shown how to run a GWAS in PLINK. Unlike in the example shown using RStudio, we will actually generate a trait of interest based off a randomly selected causal SNP (*rs2476601*) for this example GWAS.
 
 # Run a GWAS 
 
@@ -63,9 +63,9 @@ Next, open the folder where your data and the PLINK application are located in t
 
 Finally, we read the results back into RStudio and look at most significant SNPs. In a genetic study with a real disease for a trait of interest, these are the SNPs that we would spend time and money studying further and learning more about.
 
-```{r}
+```{r, e}
 gwas1 <- read_table("plinkTutorial/gwas1.qassoc.adjusted") %>%
-  arrange(P)
+  arrange(UNADJ)
 head(gwas1)
 ```
 
@@ -139,10 +139,17 @@ dataFiles <- lapply(Sys.glob("plinkTutorial/plink.P*.qassoc"), read_table)
 
 Finally, take the smallest p-value from each of the 1,000 genetic-wide association studies, and then take the 5% quantile (desired FWER) of those 1000 smallest p-values. This gives us our threshold. We got $3.39 \times 10^{-8}$.
 
-```{r}
+```{r, eval=FALSE}
 pvalues <- sapply(dataFiles, function(x) min(x$P, na.rm=TRUE))
 quantile(pvalues, 0.05)
 ```
 
-We can then go back to our original GWAS and see which SNPs have p-values below this threshold of $3.39 \times 10^{-8}$.
+We can then go back to our original GWAS and see which SNPs have p-values below this threshold of $3.39 \times 10^{-8}$. As shown in the manhattan plot below, there are two SNPs with p-values smaller than our threshold. One of these is our causal SNP *rs2476601*, and the other is a neighboring SNP that likely contains very similar information to our causal SNP. In a true genetic study, we would not know if either of these is truly associated with our trait of interest until we devote further time and resources into studying them. 
+
+![](images/intro.png)
+
+# Conclusion and future steps
+
+PLINK has allowed us to efficiently (a) run a GWAS to find important relationships between genetic data and a trait of interest and (b) determine which SNPs from that GWAS to devote further time and resources to. In the future, we would like to do this process with a more diverse set of data, which would require us to learn the additional steps necessary for accounting for the confounding effects of family and population structure in genetic data.
+
 

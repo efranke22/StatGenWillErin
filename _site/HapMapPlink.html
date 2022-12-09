@@ -90,27 +90,27 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--radix_placeholder_meta_tags-->
   <title>Home: Multiple Hypothesis Testing in PLINK</title>
 
-  <meta property="description" itemprop="description" content="How to use a more computationally efficient software to determine a threshold"/>
+  <meta property="description" itemprop="description" content="How to use a more computationally efficient software to determine a threshold."/>
 
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
   <meta property="og:title" content="Home: Multiple Hypothesis Testing in PLINK"/>
   <meta property="og:type" content="article"/>
-  <meta property="og:description" content="How to use a more computationally efficient software to determine a threshold"/>
+  <meta property="og:description" content="How to use a more computationally efficient software to determine a threshold."/>
   <meta property="og:locale" content="en_US"/>
   <meta property="og:site_name" content="Home"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
   <meta property="twitter:title" content="Home: Multiple Hypothesis Testing in PLINK"/>
-  <meta property="twitter:description" content="How to use a more computationally efficient software to determine a threshold"/>
+  <meta property="twitter:description" content="How to use a more computationally efficient software to determine a threshold."/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","site"]}},"value":[{"type":"character","attributes":{},"value":["Multiple Hypothesis Testing in PLINK"]},{"type":"character","attributes":{},"value":["How to use a more computationally efficient software to determine a threshold\n"]},{"type":"character","attributes":{},"value":["distill::distill_website"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","site"]}},"value":[{"type":"character","attributes":{},"value":["Multiple Hypothesis Testing in PLINK"]},{"type":"character","attributes":{},"value":["How to use a more computationally efficient software to determine a threshold.\n"]},{"type":"character","attributes":{},"value":["distill::distill_website"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2094,7 +2094,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Multiple Hypothesis Testing in PLINK","description":"How to use a more computationally efficient software to determine a threshold","authors":[]}
+{"title":"Multiple Hypothesis Testing in PLINK","description":"How to use a more computationally efficient software to determine a threshold.","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2121,12 +2121,133 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <h1>Multiple Hypothesis Testing in PLINK</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-<p><p>How to use a more computationally efficient software to determine a threshold</p></p>
+<p><p>How to use a more computationally efficient software to determine a threshold.</p></p>
 </div>
 
 
 <div class="d-article">
-<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<p>Now that we have shown that RStudio is not a computationally efficient software for multiple hypothesis testing, we will show how to do it in PLINK. PLINK is a free, open-source whole genome association analysis toolset, designed to perform a range of basic, large-scale analyses in a computationally efficient manner. To learn more about PLINK and how to download and use it, check out <a href="https://zzz.bwh.harvard.edu/plink/">this site</a>, which we relied heavily on. There are several different versions of PLINK online - once you download it, you should have a folder containing two black boxes: one called “plink” and one called “prettify”. Once downloaded onto your computer, PLINK runs from the terminal. We can run a GWAS in PLINK in a matter of a couple seconds instead of 30-60 minutes.</p>
+<p>The first step of this is to shown how to run a GWAS in PLINK. Unlike in the example shown using RStudio, we will actually generate a trait of interest based off a randomly selected causal SNP (<em>rs2476601</em>) for this example GWAS.</p>
+<h1 id="run-a-gwas">Run a GWAS</h1>
+<h2 id="step-1">Step 1</h2>
+<p>Select <code>pedigree</code> and <code>member</code> columns from the data and bind them to the trait of interest. These are just columns PLINK requires to run a GWAS.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>494</span><span class='op'>)</span></span>
+<span><span class='va'>y</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span><span class='op'>(</span><span class='va'>hapmap</span><span class='op'>$</span><span class='va'>fam</span> <span class='op'>%&gt;%</span> <span class='fu'>select</span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span><span class='op'>)</span>, trait <span class='op'>=</span> <span class='va'>X</span><span class='op'>[</span>,<span class='st'>'rs2476601'</span><span class='op'>]</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>165</span>, <span class='fl'>0</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>y</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>        pedigree  member      trait
+NA06989     1328 NA06989 -0.7917316
+NA11891     1377 NA11891  1.6267809
+NA11843     1349 NA11843  1.3422648
+NA12341     1330 NA12341  0.1696396
+NA12739     1444 NA12739  2.9450827
+NA10850     1344 NA10850  2.8350451</code></pre>
+</div>
+<h2 id="step-2">Step 2</h2>
+<p>Write the file to the folder with your data and the plink application. After writing the file, the folder should look something like the image below.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='fu'>write_delim</span><span class='op'>(</span><span class='va'>y</span>, <span class='st'>"plinkTutorial/trait"</span><span class='op'>)</span></span></code></pre>
+</div>
+</div>
+<p><img src="images/folder1.png" /></p>
+<h2 id="step-3">Step 3:</h2>
+<p>Next, open the folder where your data and the PLINK application are located in terminal. Run the command <code>./plink --bfile HapMap_3_r3_1 --assoc --adjust --pheno trait --out gwas1</code>. What this is saying is using the <code>HapMap_3_r3_1</code> files, run an association test with our phenotype of interest <code>trait</code> and send the results to a file called <code>gwas1.qassoc.adjusted</code>. The <code>--adjust</code> means to run one GWAS not accounting for any population structure in the data and one GWAS that does account for population structure (meaning it will make the p-values from the marginal regression models be less inflated, or small). There is not much population structure in this dataset so this is not something we need to worry about/focus on for this analysis.</p>
+<h2 id="step-4">Step 4</h2>
+<p>Finally, we read the results back into RStudio and look at most significant SNPs. In a genetic study with a real disease for a trait of interest, these are the SNPs that we would spend time and money studying further and learning more about.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>gwas1</span> <span class='op'>&lt;-</span> <span class='fu'>read_table</span><span class='op'>(</span><span class='st'>"plinkTutorial/gwas1.qassoc.adjusted"</span><span class='op'>)</span> <span class='op'>%&gt;%</span></span>
+<span>  <span class='fu'>arrange</span><span class='op'>(</span><span class='va'>UNADJ</span><span class='op'>)</span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>gwas1</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code># A tibble: 6 × 10
+    CHR SNP        UNADJ      GC   BONF   HOLM SIDAK…¹ SIDAK…²  FDR_BH
+  &lt;dbl&gt; &lt;chr&gt;      &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+1     1 rs66796… 8.72e-9 8.72e-9 0.0112 0.0112  0.0111  0.0111 0.00746
+2     1 rs24766… 1.16e-8 1.16e-8 0.0149 0.0149  0.0148  0.0148 0.00746
+3     1 rs12022… 3.45e-8 3.45e-8 0.0442 0.0442  0.0433  0.0433 0.00962
+4     1 rs37619… 3.45e-8 3.45e-8 0.0442 0.0442  0.0433  0.0433 0.00962
+5     1 rs23589… 4.55e-8 4.55e-8 0.0584 0.0584  0.0567  0.0567 0.00962
+6     1 rs22737… 6.19e-8 6.19e-8 0.0794 0.0794  0.0763  0.0763 0.00962
+# … with 1 more variable: FDR_BY &lt;dbl&gt;, and abbreviated variable
+#   names ¹​SIDAK_SS, ²​SIDAK_SD</code></pre>
+</div>
+<h2 id="step-5">Step 5</h2>
+<p>If we want, we can create a Manhattan plot, which plots the <span class="math inline">\(-\text{log}_{10}(\text{p-value})\)</span> of each of SNPs with the trait of interest. The visually helps us see where exactly some of the more significant SNPs are located. The question to ask now is how many SNPs do we look at? Which SNPs might actually be associated with our trait of interest? This is where determining a threshold with multiple hypothesis testing becomes especially useful.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>gwas1</span> <span class='op'>&lt;-</span> <span class='va'>gwas1</span> <span class='op'>%&gt;%</span></span>
+<span>  <span class='fu'>mutate</span><span class='op'>(</span>CHR <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span><span class='op'>(</span><span class='va'>CHR</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span></span>
+<span>  <span class='fu'>left_join</span><span class='op'>(</span><span class='va'>hapmap</span><span class='op'>$</span><span class='va'>map</span> <span class='op'>%&gt;%</span></span>
+<span>              <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>snp.name</span>, <span class='va'>position</span>, <span class='va'>chromosome</span><span class='op'>)</span>, by <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SNP"</span> <span class='op'>=</span> <span class='st'>"snp.name"</span>, <span class='st'>"CHR"</span> <span class='op'>=</span> <span class='st'>"chromosome"</span><span class='op'>)</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>gwas1</span> <span class='op'>%&gt;%</span></span>
+<span>  <span class='fu'>mutate</span><span class='op'>(</span>minuslogp <span class='op'>=</span> <span class='op'>-</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log10</a></span><span class='op'>(</span><span class='va'>GC</span><span class='op'>)</span>,</span>
+<span>         CHR <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>as.factor</a></span><span class='op'>(</span><span class='va'>CHR</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span></span>
+<span>  <span class='fu'>ggplot</span><span class='op'>(</span><span class='fu'>aes</span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>CHR</span>, y <span class='op'>=</span> <span class='va'>minuslogp</span>, group <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/interaction.html'>interaction</a></span><span class='op'>(</span><span class='va'>CHR</span>, <span class='va'>position</span><span class='op'>)</span>, color <span class='op'>=</span> <span class='va'>CHR</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span> </span>
+<span>  <span class='fu'>geom_point</span><span class='op'>(</span>position <span class='op'>=</span> <span class='fu'>position_dodge</span><span class='op'>(</span><span class='fl'>0.8</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span> </span>
+<span>  <span class='fu'>labs</span><span class='op'>(</span>x <span class='op'>=</span> <span class='st'>'chromosome'</span>, y <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>'-log'</span><span class='op'>[</span><span class='fl'>10</span><span class='op'>]</span>,<span class='st'>'(p-value)'</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'>theme_classic</span><span class='op'>(</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'>scale_color_manual</span><span class='op'>(</span>values<span class='op'>=</span><span class='fu'>natparks.pals</span><span class='op'>(</span><span class='st'>"DeathValley"</span>,<span class='fl'>24</span><span class='op'>)</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'>theme</span><span class='op'>(</span>legend.position <span class='op'>=</span> <span class='st'>"none"</span><span class='op'>)</span></span></code></pre>
+</div>
+</div>
+<p><img src="images/plinkGWAS.png" /></p>
+<h1 id="run-multiple-hypothesis-testing-in-plink">Run Multiple Hypothesis Testing in PLINK</h1>
+<h2 id="step-1-1">Step 1</h2>
+<p>The first step of multiple hypothesis testing in PLINK is to generate a null trait. This example will do 1,000 replications in PLINK, so we will generate 1,000 null traits of normally distributed random noise.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>create_quantitative_trait</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>i</span><span class='op'>)</span><span class='op'>{</span></span>
+<span>  <span class='va'>y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span>n <span class='op'>=</span> <span class='fl'>165</span>, mean <span class='op'>=</span> <span class='fl'>0</span>, sd <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span></span>
+<span><span class='op'>}</span></span>
+<span></span>
+<span><span class='va'>traits</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/as.data.frame.html'>as.data.frame</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>replicate</a></span><span class='op'>(</span><span class='fl'>1000</span>, <span class='fu'>create_quantitative_trait</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span></span></code></pre>
+</div>
+</div>
+<h2 id="step-2-1">Step 2</h2>
+<p>Next, we select the <code>member</code> and <code>pedigree</code> information on each individual and column bind on the 1,000 null traits. This creates a table with one row for each person (165 rows) and 1,0002 columns (<code>member</code>, <code>pedigree</code>, plus the 1000 traits).</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>traitReps</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span><span class='op'>(</span><span class='va'>hapmap</span><span class='op'>$</span><span class='va'>fam</span> <span class='op'>%&gt;%</span></span>
+<span>        <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span><span class='op'>)</span>, <span class='va'>traits</span><span class='op'>)</span></span></code></pre>
+</div>
+</div>
+<h2 id="step-3-1">Step 3</h2>
+<p>Write the <code>traitReps</code> table to the same folder where the data and the PLINK application is stored.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='fu'>write_delim</span><span class='op'>(</span><span class='va'>traitReps</span>, <span class='st'>"plinkTutorial/traitReps"</span><span class='op'>)</span></span></code></pre>
+</div>
+</div>
+<h2 id="step-4-1">Step 4</h2>
+<p>Open the folder where the data and the PLINK application are located in terminal. Run the command <code>./plink --bfile HapMap_3_r3_1 --assoc --pheno traitReps --all-pheno --pfilter 1e-3</code>. What this is saying is using the <code>HapMap_3_r3_1</code> files, run one association test with each of our 1000 null traits in the <code>traitReps</code> file. Only keep p-values that are smaller than <span class="math inline">\(1 \times 10^{-3}\)</span> to limit the size of the files created. This will create 1000 files titled <code>plink.P*.qassoc</code> in the <code>plinkTutorial</code> folder, where the * is the number of the file.</p>
+<h2 id="step-5-1">Step 5</h2>
+<p>Then read the 1,000 file into RStudio. It depends on the size of the files how long this takes, but for this dataset it takes about 3 minutes.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>dataFiles</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Sys.glob.html'>Sys.glob</a></span><span class='op'>(</span><span class='st'>"plinkTutorial/plink.P*.qassoc"</span><span class='op'>)</span>, <span class='va'>read_table</span><span class='op'>)</span></span></code></pre>
+</div>
+</div>
+<h2 id="step-6">Step 6</h2>
+<p>Finally, take the smallest p-value from each of the 1,000 genetic-wide association studies, and then take the 5% quantile (desired FWER) of those 1000 smallest p-values. This gives us our threshold. We got <span class="math inline">\(3.39 \times 10^{-8}\)</span>.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>pvalues</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>sapply</a></span><span class='op'>(</span><span class='va'>dataFiles</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>$</span><span class='va'>P</span>, na.rm<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/stats/quantile.html'>quantile</a></span><span class='op'>(</span><span class='va'>pvalues</span>, <span class='fl'>0.05</span><span class='op'>)</span></span></code></pre>
+</div>
+</div>
+<p>We can then go back to our original GWAS and see which SNPs have p-values below this threshold of <span class="math inline">\(3.39 \times 10^{-8}\)</span>. As shown in the manhattan plot below, there are two SNPs with p-values smaller than our threshold. One of these is our causal SNP <em>rs2476601</em>, and the other is a neighboring SNP that likely contains very similar information to our causal SNP. In a true genetic study, we would not know if either of these is truly associated with our trait of interest until we devote further time and resources into studying them.</p>
+<p><img src="images/intro.png" /></p>
+<h1 id="conclusion-and-future-steps">Conclusion and future steps</h1>
+<p>PLINK has allowed us to efficiently (a) run a GWAS to find important relationships between genetic data and a trait of interest and (b) determine which SNPs from that GWAS to devote further time and resources to. In the future, we would like to do this process with a more diverse set of data, which would require us to learn the additional steps necessary for accounting for the confounding effects of family and population structure in genetic data.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -2134,6 +2255,15 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <div class="d-appendix">
 </div>
 
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 
 <!--radix_placeholder_site_after_body-->
 <!--/radix_placeholder_site_after_body-->
