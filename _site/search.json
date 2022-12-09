@@ -38,7 +38,7 @@
       "description": "A project by Will Brazgel and Erin Franke exploring multiple hypothesis testing and using RStudio and PLINK to efficiently execute it on genetic data\n",
       "author": [],
       "contents": "\nOn this website, we will introduce what multiple hypothesis testing is and why it is necessary for genetic data. We will then show an example of how to complete multiple hypothesis testing in both RStudio and PLINK. Our process should be relatively easy to follow for anyone that has taken an introductory statistics class. We recommend starting on the Hypothesis Testing Background tab and moving to the tabs on the right from there. Thanks for following along!\n\nBibliography\nAcknowledgements\n\n\n\n",
-      "last_modified": "2022-12-09T09:38:15-06:00"
+      "last_modified": "2022-12-09T16:06:26-06:00"
     },
     {
       "path": "multipletesting.html",
