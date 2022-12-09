@@ -2216,7 +2216,7 @@ rs3131969           1  rs3131969 NA   744045        A        G
 rs1048488           1  rs1048488 NA   750775        C        T</code></pre>
 </div>
 <h2 id="data-cleaning">Data Cleaning</h2>
-<p>One useful piece of information not contained in the data is the <strong>minor allele frequency (MAF)</strong>. This represents the frequency of the minor allele in the dataset. We can add this to our snpMatrix using the <code>snpstats</code> package and add MAF to <code>map</code>, our dataframe that gives us SNP information.</p>
+<p>One useful piece of information not contained in the data is the <strong>minor allele frequency (MAF)</strong>, which represents what proportion of people have the less commonly occurring base pair in the data. We can add this to our snpMatrix using the <code>snpstats</code> package and add MAF to <code>map</code>, our dataframe that gives us SNP information.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'>#calculate MAF</span></span>
@@ -2304,7 +2304,7 @@ NA12739         2          2          2         2         2</code></pre>
 <span><span class='va'>X.clean</span> <span class='op'>&lt;-</span> <span class='va'>X</span><span class='op'>[</span>,<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/r/base/match.html'>%in%</a></span> <span class='va'>map.clean</span><span class='op'>$</span><span class='va'>snp.name</span><span class='op'>]</span></span></code></pre>
 </div>
 </div>
-<p>The data is now clean and ready to be used. Check out the <a href="https://multipletestingextension.netlify.app/analysisR.html">Data Analysis</a> next!</p>
+<p>The data is now clean and ready to be used. Make sure you keep it loaded in your environment for future use. Check out the <a href="https://multipletestingextension.netlify.app/analysisR.html">Data Analysis</a> tab next!</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->

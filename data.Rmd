@@ -71,7 +71,7 @@ head(hapmap$map)
 
 ## Data Cleaning
 
-One useful piece of information not contained in the data is the **minor allele frequency (MAF)**. This represents the frequency of the minor allele in the dataset. We can add this to our snpMatrix using the `snpstats` package and add MAF to `map`, our dataframe that gives us SNP information.
+One useful piece of information not contained in the data is the **minor allele frequency (MAF)**, which represents what proportion of people have the less commonly occurring base pair in the data. We can add this to our snpMatrix using the `snpstats` package and add MAF to `map`, our dataframe that gives us SNP information.
 
 ```{r}
 #calculate MAF
@@ -137,5 +137,5 @@ X.clean <- X[,colnames(X) %in% map.clean$snp.name]
 ```
 
 
-The data is now clean and ready to be used. Check out the [Data Analysis](https://multipletestingextension.netlify.app/analysisR.html) next!
+The data is now clean and ready to be used. Make sure you keep it loaded in your environment for future use. Check out the [Data Analysis](https://multipletestingextension.netlify.app/analysisR.html) tab next!
 
