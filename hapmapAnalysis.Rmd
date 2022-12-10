@@ -2,7 +2,9 @@
 title: "A final analysis of our HapMap data"
 description: |
     How we combined our knowledge of multiple hypothesis testing and PLINK results to determine an appropriate significance threshold for our HapMap dataset
-site: distill::distill_website
+output: 
+  distill::distill_article:
+    toc: true
 bibliography: Library.bib
 ---
 
@@ -66,7 +68,7 @@ results_with_position_unadjusted <- hapmap_unadjusted %>%
 
 Create manhattan plot for adjusted and unadjusted results
 
-```{r, cache=TRUE}
+```{r, eval=FALSE}
 results_with_position_adjusted %>%
   mutate(minuslogp = -log10(GC),
          CHR = as.factor(CHR)) %>%
@@ -80,7 +82,7 @@ results_with_position_adjusted %>%
   theme(legend.position = "none")
 ```
 
-```{r}
+```{r, eval=FALSE}
 results_with_position_unadjusted %>%
   mutate(minuslogp = -log10(GC),
          CHR = as.factor(CHR)) %>%

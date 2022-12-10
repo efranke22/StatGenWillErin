@@ -2,7 +2,9 @@
 title: "Data Analysis"
 description: |
      More on multiple hypothesis testing on how to do it in RStudio with the HapMap data.
-site: distill::distill_website
+output: 
+  distill::distill_article:
+    toc: true
 bibliography: Library.bib
 ---
 
@@ -184,7 +186,7 @@ We then arrange the p-values from smallest to largest and record the smallest on
 
 If this procedure was done with our trait of interest, an additional step to complete this GWAS might be to create a Manhattan plot which shows the p-values of all SNPs in our dataset. If a p-value is less than a threshold we have set, it should stand out on the plot and prompt further analysis. We will talk more about these Manhattan plots later on, once we have completed multiple hypothesis testing and determined a threshold.
 
-### Step 3
+### Step Three
 
 Step 3 is to repeat steps 1 and 2 many times, typically 1,000-10,000 times in professional genetic studies. But wait - did you run the GWAS above on your computer? If so, it probably took 30 - 60 minutes. In order to complete even 1000 replications at 30 minutes, it would take about 20.83 days on a single computer (we tested this and that number was accurate). 10,000 replications would take about 7 months, which we did not test (thankfully). As a result, this process is not feasible in RStudio! However, we will put the code below for 1000 replications in case you are tempted.
 
@@ -212,7 +214,7 @@ set.seed(494)
 simresmclapply <- mclapply(1:1000, do_one_sim, mc.cores = 2) 
 ```
 
-### Step 4
+### Step Four
 
 If you for some reason decided to run the code in Step 3, you could run the following code chunk to get the threshold for the family wise error rate of 5%. This is the significance threshold!
 

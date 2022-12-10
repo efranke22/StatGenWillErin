@@ -2,7 +2,11 @@
 title: "Multiple Hypothesis Testing in PLINK"
 description: |
      How to use a more computationally efficient software to determine a threshold.
-site: distill::distill_website
+output: 
+  distill::distill_article:
+    toc: true
+    toc_depth: 1
+bibliography: Library.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -55,7 +59,7 @@ write_delim(y, "plinkTutorial/trait")
 
 ![](images/folder1.png)
 
-## Step 3: 
+## Step 3
 
 Next, open the folder where your data and the PLINK application are located in terminal. Run the command `./plink --bfile HapMap_3_r3_1 --assoc --adjust --pheno trait --out gwas1`. What this is saying is using the `HapMap_3_r3_1` files, run an association test with our phenotype of interest `trait` and send the results to a file called `gwas1.qassoc.adjusted`. The `--adjust` means to run one GWAS not accounting for any population structure in the data and one GWAS that does account for population structure (meaning it will make the p-values from the marginal regression models be less inflated, or small). There is not much population structure in this dataset so this is not something we need to worry about/focus on for this analysis.
 

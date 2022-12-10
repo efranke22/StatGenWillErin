@@ -1,6 +1,7 @@
 name: "website"
 title: "Home"
 theme: theme.css
+search: true
 description: |
   My R ponderings
 output_dir: "_site"
