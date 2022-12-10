@@ -3,6 +3,7 @@ title: "Data Analysis"
 description: |
      More on multiple hypothesis testing on how to do it in RStudio with the HapMap data.
 site: distill::distill_website
+bibliography: Library.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -48,7 +49,7 @@ X.clean <- X[,colnames(X) %in% map.clean$snp.name]
 
 As discussed in the [Hypothesis Testing Background](https://multipletestingextension.netlify.app/multipletesting.html) section, multiple hypothesis testing is a necessary part of statistical analyses. It helps us determine the correct threshold for selecting SNPs to devote further time and resources to studying as using the standard 0.05 threshold would lead to falsely asserting relationships between a SNP and the trait of interest far too often (too many Type I errors).
 
-While Bonferroni is a great way to get an approximate threshold for a given number of SNPs, it is flawed because it treats all SNPs as independent of one another. In reality, SNPs are correlated with each other and the extent of that correlation depends on the data. This is known as the concept of **linkage disequalibrium**, which as stated in [Science Direct](https://www.sciencedirect.com/topics/neuroscience/linkage-disequilibrium) is the idea that two markers in close physical proximity are correlated in a population and are in association more than would be expected with random assortment. Essentially, SNPs next to each other are much more similar than SNPs far away from each other. 
+While Bonferroni is a great way to get an approximate threshold for a given number of SNPs, it is flawed because it treats all SNPs as independent of one another. In reality, SNPs are correlated with each other and the extent of that correlation depends on the data. This is known as the concept of **linkage disequalibrium**, which as stated in [Science Direct](https://www.sciencedirect.com/topics/neuroscience/linkage-disequilibrium) [@linkage] is the idea that two markers in close physical proximity are correlated in a population and are in association more than would be expected with random assortment. Essentially, SNPs next to each other are much more similar than SNPs far away from each other. 
 
 We can show this concept of correlation with our data. To do this, we will use the SnpMatrix in which our data is stored. As mentioned in the [Data](https://multipletestingextension.netlify.app/data.html) section, each row is one of the 165 members of this study, and each column is one of our 1,457,897 SNPs.
 
@@ -73,7 +74,7 @@ hapmap.ld.nomono <- ld(chr1_100[,-mono], depth = 118-length(mono), stats = "R.sq
 image(hapmap.ld.nomono, lwd = 0, cuts = 9, col.regions = color.pal, colorkey = TRUE)
 ```
 
-While the first 100 polymorphic SNPs from this HapMap dataset have the linkage disequilibrium matrix shown above, if we were to look at another dataset it might look completely different. For example, the linkage disequilibrium matrix for the first 100 SNPs from a dataset from [Rbloggers](https://www.r-bloggers.com/2017/10/genome-wide-association-studies-in-r/) looks like this:
+While the first 100 polymorphic SNPs from this HapMap dataset have the linkage disequilibrium matrix shown above, if we were to look at another dataset it might look completely different. For example, the linkage disequilibrium matrix for the first 100 SNPs from a dataset from [Rbloggers](https://www.r-bloggers.com/2017/10/genome-wide-association-studies-in-r/) [@lima_2017] looks like this:
 
 ```{r, echo=FALSE}
 load("rbloggersData/conversionTable.RData")

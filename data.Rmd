@@ -2,10 +2,13 @@
 title: "HapMap Data"
 description: |
      This page explains information on the data context and cleaning steps necessary to run GWAS and multiple hypothesis testing procedures in RStudio.
-site: distill::distill_website
+output: 
+  distill::distill_article:
+    toc: true
+bibliography: Library.bib
 ---
 
-In the [Data Analysis](https://multipletestingextension.netlify.app/analysisR.html) and [Hypothesis Testing in PLINK](https://multipletestingextension.netlify.app/HapMapPlink.html) tabs of this site, we will explain how to do a GWAS and determine a threshold for a set of genetic data. To follow along, download the `1_QC_GWAS.zip` file from [this page](https://github.com/MareesAT/GWA_tutorial/). This data comes from the International HapMap project (also known as “HapMap”). For more information on the data and project, check out [this tutorial](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6001694/).
+In the [Data Analysis](https://multipletestingextension.netlify.app/analysisR.html) and [Hypothesis Testing in PLINK](https://multipletestingextension.netlify.app/HapMapPlink.html) tabs of this site, we will explain how to do a GWAS and determine a threshold for a set of genetic data. To follow along, download the `1_QC_GWAS.zip` file from [this page](https://github.com/MareesAT/GWA_tutorial/) [@mareesat]. This data comes from the International HapMap project (also known as “HapMap”). For more information on the data and project, check out [this tutorial](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6001694/) [@hapmap].
 
 ## Data Loading and Organization
 
@@ -71,7 +74,7 @@ head(hapmap$map)
 
 ## Data Cleaning
 
-One useful piece of information not contained in the data is the **minor allele frequency (MAF)**, which represents what proportion of people have the less commonly occurring base pair in the data. We can add this to our snpMatrix using the `snpstats` package and add MAF to `map`, our dataframe that gives us SNP information.
+One useful piece of information not contained in the data is the **minor allele frequency (MAF)**, which represents what proportion of people have the less commonly occurring base pair in the data. We can add this to our snpMatrix using the `snpstats` package and add MAF to `map`, our data frame that gives us SNP information.
 
 ```{r}
 #calculate MAF

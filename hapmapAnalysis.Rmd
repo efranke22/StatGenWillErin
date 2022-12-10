@@ -3,6 +3,7 @@ title: "A final analysis of our HapMap data"
 description: |
     How we combined our knowledge of multiple hypothesis testing and PLINK results to determine an appropriate significance threshold for our HapMap dataset
 site: distill::distill_website
+bibliography: Library.bib
 ---
 
 ```{r setup, include=FALSE}

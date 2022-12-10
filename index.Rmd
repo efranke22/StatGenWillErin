@@ -1,7 +1,7 @@
 ---
 title: "An Extension of Multiple Hypothesis Testing in Statistical Genetics"
 description: |
-  A project by Will Brazgel and Erin Franke exploring multiple hypothesis testing and using RStudio and PLINK to efficiently execute it on genetic data
+  A project by Will Brazgel and Erin Franke exploring multiple hypothesis testing and using RStudio and PLINK to efficiently execute it on genetic data.
 site: distill::distill_website
 ---
 
@@ -17,9 +17,11 @@ On this website, we will introduce what multiple hypothesis testing is and why i
 
 ![](images/intro.png)
 
-### Bibliography
+# Acknowledgements
+
+Special thanks to our professor Kelsey Grinde for her support through this project!
 
 
-### Acknowledgements
+
 
 
