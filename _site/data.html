@@ -134,7 +134,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","output","bibliography"]}},"value":[{"type":"character","attributes":{},"value":["HapMap Data"]},{"type":"character","attributes":{},"value":["This page explains information on the data context and cleaning steps necessary to run GWAS and multiple hypothesis testing procedures in RStudio.\n"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","code_folding"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["show"]}]}]},{"type":"character","attributes":{},"value":["Library.bib"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","output","bibliography"]}},"value":[{"type":"character","attributes":{},"value":["HapMap Data"]},{"type":"character","attributes":{},"value":["This page explains information on the data context and cleaning steps necessary to run GWAS and multiple hypothesis testing procedures in RStudio.\n"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc"]}},"value":[{"type":"logical","attributes":{},"value":[true]}]}]},{"type":"character","attributes":{},"value":["Library.bib"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2476,23 +2476,14 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <p>The following code chunks outline the steps of importing the genetic data.</p>
 <p>If you have not installed the <code>snpStats</code> package, install it in the console by running the following code chunk.</p>
 <div class="layout-chunk" data-layout="l-body">
-<details>
-<summary>
-show
-</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'>if</span> <span class='op'>(</span><span class='op'>!</span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='st'>"BiocManager"</span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span></span>
 <span>    <span class='fu'><a href='https://rdrr.io/r/utils/install.packages.html'>install.packages</a></span><span class='op'>(</span><span class='st'>"BiocManager"</span><span class='op'>)</span></span>
 <span><span class='fu'>BiocManager</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/BiocManager/man/install.html'>install</a></span><span class='op'>(</span><span class='st'>"snpStats"</span><span class='op'>)</span></span></code></pre>
 </div>
-</details>
 </div>
 <p>Load libraries:</p>
 <div class="layout-chunk" data-layout="l-body">
-<details>
-<summary>
-show
-</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>snpStats</span><span class='op'>)</span></span>
 <span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidyverse.tidyverse.org'>tidyverse</a></span><span class='op'>)</span></span>
@@ -2501,14 +2492,9 @@ show
 <span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>parallel</span><span class='op'>)</span></span>
 <span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://ggobi.github.io/ggally/'>GGally</a></span><span class='op'>)</span>     </span></code></pre>
 </div>
-</details>
 </div>
 <p>Load the data, using the correct directory of where you put the <code>HapMap_3_r3_1.fam</code>, <code>HapMap_3_r3_1.bim</code>, and <code>HapMap_3_r3_1.bed</code> files from the <code>1_QC_GWAS.zip</code> folder. This process uses <code>read.plink()</code>, which reads a genotype matrix, information on the study’s individuals, and information on the SNPs.</p>
 <div class="layout-chunk" data-layout="l-body">
-<details>
-<summary>
-show
-</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>fam</span> <span class='op'>&lt;-</span> <span class='st'>'hapmapData/HapMap_3_r3_1.fam'</span></span>
 <span><span class='va'>bim</span> <span class='op'>&lt;-</span> <span class='st'>'hapmapData/HapMap_3_r3_1.bim'</span></span>
@@ -2516,33 +2502,22 @@ show
 <span></span>
 <span><span class='va'>hapmap</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/snpStats/man/read.plink.html'>read.plink</a></span><span class='op'>(</span><span class='va'>bed</span>, <span class='va'>bim</span>, <span class='va'>fam</span><span class='op'>)</span></span></code></pre>
 </div>
-</details>
 </div>
 <h2 id="understanding-the-data">Understanding the Data</h2>
 <p>First, get information about the genotype data. We have 165 individuals and 1,457,897 SNPs.</p>
 <div class="layout-chunk" data-layout="l-body">
-<details>
-<summary>
-show
-</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>hapmap</span><span class='op'>$</span><span class='va'>genotypes</span></span></code></pre>
 </div>
-</details>
 <pre><code>A SnpMatrix with  165 rows and  1457897 columns
 Row names:  NA06989 ... NA12865 
 Col names:  rs2185539 ... rs1973881 </code></pre>
 </div>
 <p>Next, look at the information we have on the individuals in the study. Theoretically, this gives information on family relationships with <code>pedigree</code>, <code>father</code>, and <code>mother</code>, but the <code>father</code> and <code>mother</code> variables contain only missing values. We also have information on the individual’s binary sex, with <code>1</code> representing male and <code>2</code> female. The <code>affected</code> column represents if the individual had the trait of interest or not, but there are many missing values in this column.</p>
 <div class="layout-chunk" data-layout="l-body">
-<details>
-<summary>
-show
-</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>hapmap</span><span class='op'>$</span><span class='va'>fam</span><span class='op'>)</span></span></code></pre>
 </div>
-</details>
 <pre><code>        pedigree  member  father  mother sex affected
 NA06989     1328 NA06989    &lt;NA&gt;    &lt;NA&gt;   2        2
 NA11891     1377 NA11891    &lt;NA&gt;    &lt;NA&gt;   1        2
@@ -2574,14 +2549,9 @@ NA10850     1344 NA10850    &lt;NA&gt; NA12058   2       NA</code></pre>
 </li>
 </ul>
 <div class="layout-chunk" data-layout="l-body">
-<details>
-<summary>
-show
-</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>hapmap</span><span class='op'>$</span><span class='va'>map</span><span class='op'>)</span></span></code></pre>
 </div>
-</details>
 <pre><code>           chromosome   snp.name cM position allele.1 allele.2
 rs2185539           1  rs2185539 NA   556738        T        C
 rs11510103          1 rs11510103 NA   557616        G        A
@@ -2593,10 +2563,6 @@ rs1048488           1  rs1048488 NA   750775        C        T</code></pre>
 <h2 id="data-cleaning">Data Cleaning</h2>
 <p>One useful piece of information not contained in the data is the <strong>minor allele frequency (MAF)</strong>, which represents what proportion of people have the less commonly occurring base pair in the data. We can add this to our snpMatrix using the <code>snpstats</code> package and add MAF to <code>map</code>, our data frame that gives us SNP information.</p>
 <div class="layout-chunk" data-layout="l-body">
-<details>
-<summary>
-show
-</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'>#calculate MAF</span></span>
 <span><span class='va'>maf</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/snpStats/man/row.summary.html'>col.summary</a></span><span class='op'>(</span><span class='va'>hapmap</span><span class='op'>$</span><span class='va'>genotypes</span><span class='op'>)</span><span class='op'>$</span><span class='va'>MAF</span></span>
@@ -2606,7 +2572,6 @@ show
 <span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>MAF <span class='op'>=</span> <span class='va'>maf</span><span class='op'>)</span></span>
 <span><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>map</span><span class='op'>)</span></span></code></pre>
 </div>
-</details>
 <pre><code>           chromosome   snp.name cM position allele.1 allele.2
 rs2185539           1  rs2185539 NA   556738        T        C
 rs11510103          1 rs11510103 NA   557616        G        A
@@ -2640,31 +2605,21 @@ rs1048488  0.15853659</code></pre>
 <p>Executing this multiplication, we just get <span class="math inline">\(1 * \beta_0 = 0\)</span>. The is problematic because we have linear dependence. You can get the column of minor allele counts by multiplying the intercept column by 0 - in other words, the minor allele count column is a linear combination of the intercept column. This makes our design matrix not be full rank, making <span class="math inline">\(X^TX\)</span> not invertible and the least squares estimator not defined.</p>
 <p>Given all these reasons, we remove SNPs with a MAF of 0 using the code below.</p>
 <div class="layout-chunk" data-layout="l-body">
-<details>
-<summary>
-show
-</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>map</span> <span class='op'>&lt;-</span> <span class='va'>map</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
 <span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>maf</span> <span class='op'>&gt;</span><span class='fl'>0</span> <span class='op'>)</span></span>
 <span></span>
 <span><span class='fu'><a href='https://rdrr.io/r/base/dim.html'>dim</a></span><span class='op'>(</span><span class='va'>map</span><span class='op'>)</span></span></code></pre>
 </div>
-</details>
 <pre><code>[1] 1283751       7</code></pre>
 </div>
 <p>After filtering, we have 1,283,751 SNPs remaining. Therefore, we removed 174,146 monomorphic SNPs.</p>
 <p>Before moving on, we must complete one final data cleaning step. The <code>snpstats</code> package uses a format in which genotypes are coded as 01, 02, and 03, with 00 representing missing values.<br />
 </p>
 <div class="layout-chunk" data-layout="l-body">
-<details>
-<summary>
-show
-</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>hapmap</span><span class='op'>$</span><span class='va'>genotypes</span><span class='op'>@</span><span class='va'>.Data</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span>,<span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span><span class='op'>]</span></span></code></pre>
 </div>
-</details>
 <pre><code>        rs2185539 rs11510103 rs11240767 rs3131972 rs3131969
 NA06989        03         03         03        02        02
 NA11891        03         03         03        02        03
@@ -2675,15 +2630,10 @@ NA12739        03         03         03        03        03</code></pre>
 <p>We will convert this to a 0, 1, and 2 format. Now the matrix represents the number of major alleles each person has at each SNP.<br />
 </p>
 <div class="layout-chunk" data-layout="l-body">
-<details>
-<summary>
-show
-</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>X</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/methods/as.html'>as</a></span><span class='op'>(</span><span class='va'>hapmap</span><span class='op'>$</span><span class='va'>genotypes</span>, <span class='st'>"numeric"</span><span class='op'>)</span></span>
 <span><span class='va'>X</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span>, <span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span><span class='op'>]</span></span></code></pre>
 </div>
-</details>
 <pre><code>        rs2185539 rs11510103 rs11240767 rs3131972 rs3131969
 NA06989         2          2          2         1         1
 NA11891         2          2          2         1         2
@@ -2693,16 +2643,11 @@ NA12739         2          2          2         2         2</code></pre>
 </div>
 <p>Create <code>X.clean</code> by removing the monomorphic SNPs from <code>X</code>.</p>
 <div class="layout-chunk" data-layout="l-body">
-<details>
-<summary>
-show
-</summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>map.clean</span> <span class='op'>&lt;-</span> <span class='va'>map</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
 <span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>MAF</span> <span class='op'>&gt;</span><span class='fl'>0</span><span class='op'>)</span></span>
 <span><span class='va'>X.clean</span> <span class='op'>&lt;-</span> <span class='va'>X</span><span class='op'>[</span>,<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/r/base/match.html'>%in%</a></span> <span class='va'>map.clean</span><span class='op'>$</span><span class='va'>snp.name</span><span class='op'>]</span></span></code></pre>
 </div>
-</details>
 </div>
 <p>The data is now clean and ready to be used. Make sure you keep it loaded in your environment for future use. Check out the <a href="https://multipletestingextension.netlify.app/analysisR.html">Data Analysis</a> tab next!</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
