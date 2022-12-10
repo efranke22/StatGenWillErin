@@ -7,7 +7,7 @@ description: |
 output_dir: "_site"
 navbar:
   right:
-    - text: "Hypothesis Testing Background"
+    - text: "Multiple Hypothesis Testing"
       href: multipletesting.html
     - text: "Data"
       href: data.html

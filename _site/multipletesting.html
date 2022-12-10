@@ -2385,7 +2385,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     color: var(--hover-color, white);
   }</style>
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2416,7 +2416,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <a href="index.html" class="title">Home</a>
 </div>
 <div class="nav-right">
-<a href="multipletesting.html">Hypothesis Testing Background</a>
+<a href="multipletesting.html">Multiple Hypothesis Testing</a>
 <a href="data.html">Data</a>
 <a href="analysisR.html">Data Analysis</a>
 <a href="HapMapPlink.html">Hypothesis Testing in PLINK</a>
@@ -2447,15 +2447,17 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </nav>
 </div>
 <h2 id="genome-wide-association-studies">Genome Wide Association Studies</h2>
-<p>If we compare any two human genomes, they are nearly identical. However, places where DNA sequences differ are known as genetic variants. There are multiple types of genetic variants, but our work is primarily focused on single nucleotide variants (SNVs).</p>
-<p><u>SNVs</u> : DNA variation that occurs when a single nucleotide in the genome sequence is altered (A vs G at a single position).</p>
+<p>To understand the need for multiple hypothesis testing, we need to be familiar with Genome Wide Association Studies(GWAS) and the complexities to working with genetic data.</p>
+<h3 id="gwas">GWAS</h3>
+<p>If we compare any two human genomes, they are nearly identical. However, places where DNA sequences differ are known as genetic variants. Once there is a collection of variants to be studied, GWAS attempts to determine which genetic variants are associated with an illness (Type One Diabetes) or trait of interest (height).</p>
+<p>There are multiple types of genetic variants, but GWAS is focused on variants that are simply exchanges of one nucleotide base pair for another, otherwise known as single nucleotide polymorphisms(SNPs).</p>
+<p><u>SNPs</u> : DNA variation that occurs when a single nucleotide base pair in the genome sequence is altered (AT vs GC at a single position).</p>
 <center>
 <figure>
 <img src="images/geneticvariants.png" style="width:40.0%" alt="Genetic Variant Example" />
 <figcaption aria-hidden="true">Genetic Variant Example</figcaption>
 </figure>
 </center>
-<h3 id="genome-wide-association-studies-can-aid-in-the-determination-of-which-genetic-variants-are-associated-with-an-illness-or-trait-of-interest.">Genome Wide Association Studies can aid in the determination of which genetic variants are associated with an illness or trait of interest.</h3>
 <p>In order to make statements on whether or not a genetic variant is associated with the trait of interest, we utilize hypothesis testing.</p>
 <h2 id="hypothesis-testing-review">Hypothesis Testing Review</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>

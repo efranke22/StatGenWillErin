@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ```
 
-On this website, we will introduce what multiple hypothesis testing is and why it is necessary for genetic data. We will then show an example of how to complete multiple hypothesis testing in both RStudio and PLINK. Our process should be relatively easy to follow for anyone that has taken an introductory statistics class. We recommend starting on the [Hypothesis Testing Background](https://multipletestingextension.netlify.app/multipletesting.html) tab and moving to the tabs on the right from there. Thanks for following along!
+On this website, we will introduce what multiple hypothesis testing is and why it is necessary for genetic data. We will then show an example of how to complete multiple hypothesis testing in both RStudio and PLINK. Our process should be relatively easy to follow for anyone that has taken an introductory statistics class. We recommend starting on the [Multiple Hypothesis Testing ](https://multipletestingextension.netlify.app/multipletesting.html) tab and moving to the tabs on the right from there. Thanks for following along!
 
 ![](images/intro.png)
 
