@@ -2442,24 +2442,49 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <h3>Contents</h3>
 <ul>
 <li><a href="#genome-wide-association-studies" id="toc-genome-wide-association-studies">Genome Wide Association Studies</a></li>
-<li><a href="#hypothesis-testing-review" id="toc-hypothesis-testing-review">Hypothesis Testing Review</a></li>
+<li><a href="#multiple-hypothesis-testing" id="toc-multiple-hypothesis-testing">Multiple Hypothesis Testing</a></li>
+<li><a href="#false-discovery-rate" id="toc-false-discovery-rate">False Discovery Rate</a></li>
 </ul>
 </nav>
 </div>
 <h2 id="genome-wide-association-studies">Genome Wide Association Studies</h2>
 <p>To understand the need for multiple hypothesis testing, we need to be familiar with Genome Wide Association Studies(GWAS) and the complexities to working with genetic data.</p>
-<h3 id="gwas">GWAS</h3>
-<p>If we compare any two human genomes, they are nearly identical. However, places where DNA sequences differ are known as genetic variants. Once there is a collection of variants to be studied, GWAS attempts to determine which genetic variants are associated with an illness (Type One Diabetes) or trait of interest (height).</p>
-<p>There are multiple types of genetic variants, but GWAS is focused on variants that are simply exchanges of one nucleotide base pair for another, otherwise known as single nucleotide polymorphisms(SNPs).</p>
-<p><u>SNPs</u> : DNA variation that occurs when a single nucleotide base pair in the genome sequence is altered (AT vs GC at a single position).</p>
+<h3 id="explanation-of-gwas">Explanation of GWAS</h3>
+<p>If we compare any two human genomes, they are nearly identical. However, places where DNA sequences differ are known as genetic variants. Once there is a collection of variants to be studied, GWAS attempts to determine which genetic variants are associated with an illness (Type One Diabetes, Crohn’s Disease) or trait of interest (height, blood pressure).</p>
+<p>There are multiple types of genetic variants, but GWAS is focused on variants that are exchanges of one nucleotide base pair for another, otherwise known as single nucleotide polymorphisms(SNPs). Figure 1 is a visual example of a SNP.</p>
+<p><strong>SNPs</strong> : DNA variations that occur when a single nucleotide base pair in the genome sequence is altered (AT vs GC at a single position).</p>
 <center>
 <figure>
-<img src="images/geneticvariants.png" style="width:40.0%" alt="Genetic Variant Example" />
-<figcaption aria-hidden="true">Genetic Variant Example</figcaption>
+<img src="images/geneticvariants.png" style="width:40.0%" alt="Figure 1: SNP Example" />
+<figcaption aria-hidden="true">Figure 1: SNP Example</figcaption>
 </figure>
 </center>
-<p>In order to make statements on whether or not a genetic variant is associated with the trait of interest, we utilize hypothesis testing.</p>
-<h2 id="hypothesis-testing-review">Hypothesis Testing Review</h2>
+<h3 id="working-with-genetic-data">Working with Genetic Data</h3>
+<p>When working with genetic data and running GWAS, the number of SNPs to be studied is commonly greater than 1,000,000. Because of this, we cannot simply fit a multiple linear regression model to predict the existence of an illness or the value of a trait of interest. As an equation, this would be equivalent to <strong>E[y | x] = ꞵ + ꞵ1x + … + ꞵnx</strong>, where y is the trait and x is the number of minor alleles.</p>
+<p>In this situation, our goal would be to find a line of best fit where “best” is described as the minimized sum of squared residuals, which requires complicated derivations. This would be quite time consuming and difficult to find the optimal ꞵ0 and ꞵ1…ꞵn considering how large the number of predictors is. Even if we used a different technique such as matrix derivation, because there are more SNPs(columns) than individuals we are studying(rows), our matrix is not invertible and thus our least squares estimator is not defined. This conclusion is proven through linear algebra.</p>
+<p>Instead, we utilize <strong>Marginal Regression</strong>, where instead of one multiple linear model, we make “n” linear models one by one equal to the number of SNPs we are studying. As an equation, this would be equivalent to <strong>E[y | xj] = ꞵ + ꞵ1xj + … + ꞵnxj</strong>, where y is the trait and x is the number of minor alleles at that SNP. From these marginal regressions, we receive test statistics and p-values for each SNP. Once we have a p-value for each SNP, we can begin to visualize these values and make decisions of whether or not a SNP is associated with our trait of interest. Figure 2 is an example of how we can visualize p-values, known as a Manhattan Plot. The y-axis is -log10 transformed so that smaller p-values appear as higher on the plot. For now, ignore the horizontal blue line.</p>
+<center>
+<figure>
+<img src="images/manhatplot.png" style="width:90.0%" alt="Figure 2: Manhattan Plot" />
+<figcaption aria-hidden="true">Figure 2: Manhattan Plot</figcaption>
+</figure>
+</center>
+<h2 id="multiple-hypothesis-testing">Multiple Hypothesis Testing</h2>
+<p>In order to make these decision of whether or not an association exists, we utilize hypothesis testing.</p>
+<h3 id="hypothesis-testing-review">Hypothesis Testing Review</h3>
+<p>To review, hypothesis testing is predicated on if a p-value is less than or greater than a predetermined significance threshold, commonly represented as <strong> 𝛼 </strong>. Furthermore, there are two hypotheses, the null hypothesis and the alternative hypothesis. If a p-value is greater than the significance threshold, we cannot reject the null hypothesis and therefore conclude the null hypothesis to be true. On the other hand, if a p-value is less than the significance threshold, we reject the null hypothesis and therefore conclude the alternative hypothesis to be true. Here is a table that recaps the decsions we can make and the consequences of those decisons</p>
+<p>Table image</p>
+<p>Make sure this is finished</p>
+<h3 id="hypothesis-testing-in-gwas">Hypothesis Testing in GWAS</h3>
+<p>Give context about null</p>
+<p>But we mentioned marginal regression, so this is not just one hypothesis test, but millions. This creates an issue related to type one error, falsely rejecting the null.</p>
+<p>Bucket Example</p>
+<p>Image of bucket</p>
+<p>This is further supported by this equation, proven by mathematical statistics that alpha = t1e for one test. P(at least 1 T1E) = fwer</p>
+<h3 id="determining-a-threshold">Determining a Threshold</h3>
+<p>we want fwer to be 0.05 not alpha, so we control with bonferroni</p>
+<p>imagine if .05 on manhattan plot, show image</p>
+<h2 id="false-discovery-rate">False Discovery Rate</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
