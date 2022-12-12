@@ -2442,7 +2442,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <h3>Contents</h3>
 <ul>
 <li><a href="#genome-wide-association-studies" id="toc-genome-wide-association-studies">Genome Wide Association Studies</a></li>
-<li><a href="#multiple-hypothesis-testing" id="toc-multiple-hypothesis-testing">Multiple Hypothesis Testing</a></li>
+<li><a href="#hypothesis-testing-in-gwas" id="toc-hypothesis-testing-in-gwas">Hypothesis Testing in GWAS</a></li>
 <li><a href="#false-discovery-rate" id="toc-false-discovery-rate">False Discovery Rate</a></li>
 </ul>
 </nav>
@@ -2469,18 +2469,27 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <figcaption aria-hidden="true">Figure 2: Manhattan Plot</figcaption>
 </figure>
 </center>
-<h2 id="multiple-hypothesis-testing">Multiple Hypothesis Testing</h2>
-<p>In order to make these decision of whether or not an association exists, we utilize hypothesis testing.</p>
+<h2 id="hypothesis-testing-in-gwas">Hypothesis Testing in GWAS</h2>
+<p>In order to make these decisions of whether or not an association exists, we utilize hypothesis testing. As you read this section, note that the null hypothesis in GWAS is that there is no relationship between a SNP and the trait of interest.</p>
 <h3 id="hypothesis-testing-review">Hypothesis Testing Review</h3>
-<p>To review, hypothesis testing is predicated on if a p-value is less than or greater than a predetermined significance threshold, commonly represented as <strong> 𝛼 </strong>. Furthermore, there are two hypotheses, the null hypothesis and the alternative hypothesis. If a p-value is greater than the significance threshold, we cannot reject the null hypothesis and therefore conclude the null hypothesis to be true. On the other hand, if a p-value is less than the significance threshold, we reject the null hypothesis and therefore conclude the alternative hypothesis to be true. Here is a table that recaps the decsions we can make and the consequences of those decisons</p>
-<p>Table image</p>
-<p>Make sure this is finished</p>
-<h3 id="hypothesis-testing-in-gwas">Hypothesis Testing in GWAS</h3>
-<p>Give context about null</p>
-<p>But we mentioned marginal regression, so this is not just one hypothesis test, but millions. This creates an issue related to type one error, falsely rejecting the null.</p>
-<p>Bucket Example</p>
-<p>Image of bucket</p>
-<p>This is further supported by this equation, proven by mathematical statistics that alpha = t1e for one test. P(at least 1 T1E) = fwer</p>
+<p>To review, hypothesis testing is predicated on the comparison of a p-value and a predetermined significance threshold, commonly represented as 𝛼 and equal to 0.05. There are two hypotheses, the null hypothesis and the alternative hypothesis. If a p-value is less than the significance threshold, we reject the null hypothesis and therefore conclude the alternative hypothesis to be true. In context, we would conclude that there is a relationship between that SNP and the trait of interest. On the other hand, if a p-value is greater than the significance threshold, we cannot reject the null hypothesis and therefore conclude the null hypothesis to be true. In context, we would conclude that there is not a relationship between that SNP and the trait of interest. Figure 3 is a table that summarizes the decisions we can make and the consequences of those decisions. We desire to correctly reject the null as much as possible(power) while avoiding both falsely rejecting the null(Type 1 Error) and failing to reject the null when we should (Type 2 Error).</p>
+<center>
+<figure>
+<img src="images/table.png" style="width:90.0%" alt="Figure 3: Hypothesis Testing Decisions" />
+<figcaption aria-hidden="true">Figure 3: Hypothesis Testing Decisions</figcaption>
+</figure>
+</center>
+<h3 id="the-multiple-testing-problem">The Multiple Testing Problem</h3>
+<p>Aside from the added GWAS context, our explanation should be identical to what you would encounter in an introductory statistics course. However, there is additional complexity in GWAS because of the aforementioned need for marginal regression. Recall, we are not running one hypothesis test, but millions, and this drastically effects our ability to conclude that a SNP is significantly associated.</p>
+<p>To illustrate, imagine there is a bucket with ten balls inside, nine are red and one is blue, as seen in Figure 4. If you reach in the bucket once, your chance of grabbing a red ball is 90% (9/10). If you reach in the bucket five times, independently, your chance of grabbing a red ball all five times is 59% (.9^5). In this five-ball scenario, your chance of grabbing the blue ball <strong>at least once</strong> increases from 10%(one-ball scenario) to 41%. As expected, if you reach in the bucket ten times, independently, your chance of grabbing a red ball all ten times is even smaller, 35% (.9^10), and your chance of grabbing the blue ball <strong>at least once</strong> increases to 65%. Overall, the more times you reach in the bucket, the higher the chance of grabbing at least one blue ball.</p>
+<center>
+<figure>
+<img src="images/bucket.png" style="width:50.0%" alt="Figure 4: Bucket Example" />
+<figcaption aria-hidden="true">Figure 4: Bucket Example</figcaption>
+</figure>
+</center>
+<p>With this in mind, consider every time you reach into the bucket as a hypothesis test and the event of grabbing the blue ball as Type 1 Error. As the number of hypothesis tests increases, the chance of at least one Type 1 Error increases. In words, if we reject the null hypothesis when we witness a “rare” event, it will be easier to find rare events and furthermore easier to mistakenly think that an event is truly rare as the number of tests get increasingly larger. Clearly, this is a major problem with the multiple hypothesis testing procedure that is needed to make decisions in GWAS.</p>
+<p>This concept is further supported by this equation, <strong>P(at least 1 Type 1 Error) = 1 - (1 - 𝛼)^n</strong>, which holds due to a number of proofs that we will point out but won’t fully explain at this time. First, according to mathematical statistics proofs, 𝛼 is equal to the chance of Type 1 Error for a singular hypothesis test. Second, according to probability proofs, P(A &gt;= 1) = 1 - P(complement of A) where A = Type 1 Error. Lastly, we can raise our equation to the power of n, with n being the number of hypothesis tests we are running, because we assume each test to be independent.</p>
 <h3 id="determining-a-threshold">Determining a Threshold</h3>
 <p>we want fwer to be 0.05 not alpha, so we control with bonferroni</p>
 <p>imagine if .05 on manhattan plot, show image</p>
