@@ -36,7 +36,7 @@ When working with genetic data and running GWAS, the number of SNPs to be studie
 
 In this situation, our goal would be to find a line of best fit where “best” is described as the minimized sum of squared residuals, which requires complicated derivations. This would be quite time consuming and difficult to find the optimal ꞵ0 and ꞵ1...ꞵn considering how large the number of predictors is. Even if we used a different technique such as matrix derivation, because there are more SNPs(columns) than individuals we are studying(rows), our matrix is not invertible and thus our least squares estimator is not defined. This conclusion is proven through linear algebra.
 
-Instead, we utilize <strong>Marginal Regression</strong>, where instead of one multiple linear model, we make "n" linear models one by one equal to the number of SNPs we are studying. As an equation, this would be equivalent to <strong>E[y | xj] = ꞵ + ꞵ1xj + ... + ꞵnxj</strong>, where y is the trait and x is the number of minor alleles at that SNP. From these marginal regressions, we receive test statistics and p-values for each SNP. Once we have a p-value for each SNP, we can begin to visualize these values and make decisions of whether or not a SNP is associated with our trait of interest. Figure 2 is an example of how we can visualize p-values, known as a Manhattan Plot. The y-axis is -log10 transformed so that smaller p-values appear as higher on the plot. For now, ignore the horizontal blue line.
+Instead, we utilize <strong>Marginal Regression</strong>. As an equation, this would be equivalent to <strong>E[y | xj] = ꞵ + ꞵ1xj + ... + ꞵnxj</strong>, where y is the trait and x is the number of minor alleles at that SNP. From these marginal regressions, we receive test statistics and p-values for each SNP. Once we have a p-value for each SNP, we can begin to visualize these values and make decisions of whether or not a SNP is associated with our trait of interest. Figure 2 is an example of how we can visualize p-values, known as a Manhattan Plot. The y-axis is -log10 transformed so that smaller p-values appear as higher on the plot. For now, ignore the horizontal blue line.
 
 <center>
 ![Figure 2: Manhattan Plot](images/manhatplot.png){width=90%}
@@ -66,12 +66,25 @@ To illustrate, imagine there is a bucket with ten balls inside, nine are red and
 
 With this in mind, consider every time you reach into the bucket as a hypothesis test and the event of grabbing the blue ball as Type 1 Error. As the number of hypothesis tests increases, the chance of at least one Type 1 Error increases. In words, if we reject the null hypothesis when we witness a "rare" event, it will be easier to find rare events and furthermore easier to mistakenly think that an event is truly rare as the number of tests get increasingly larger. Clearly, this is a major problem with the multiple hypothesis testing procedure that is needed to make decisions in GWAS.
 
-This concept is further supported by this equation, <strong>P(at least 1 Type 1 Error) = 1 - (1 - 𝛼)^n</strong>, which holds due to a number of proofs that we will point out but won't fully explain at this time. First, according to mathematical statistics proofs, 𝛼 is equal to the chance of Type 1 Error for a singular hypothesis test. Second, according to probability proofs, P(A >= 1) = 1 - P(complement of A) where A = Type 1 Error. Lastly, we can raise our equation to the power of n, with n being the number of hypothesis tests we are running, because we assume each test to be independent. 
+This concept is further supported by this equation, <strong>P(at least one Type 1 Error) = 1 - (1 - 𝛼)^n</strong>, which holds due to a number of proofs that we will point out but won't fully explain at this time. First, according to mathematical statistics proofs, 𝛼 is equal to the chance of Type 1 Error for a singular hypothesis test. Second, according to probability proofs, P(A >= 1) = 1 - P(complement of A) where A = Type 1 Error. Lastly, we can raise our equation to the power of n, with n being the number of hypothesis tests we are running, because we assume each test to be independent. 
 
 ### Determining a Threshold
 
-we want fwer to be 0.05 not alpha, so we control with bonferroni 
+This probability of at least one Type 1 Error is better known as the <strong>Family Wise Error Rate (FWER)</strong>. Rather than 𝛼 = 0.05, we often want FWER = 0.05. Looking back at the equation for FWER, we know the number of tests to be conducted will be over a million, so we must adjust the significance threshold.
 
-imagine if .05 on manhattan plot, show image
+To do this, there is a widely used approach known as the Bonferroni Correction. This correction is very straightforward, simply dividing the desired FWER by the number of hypothesis tests conducted. Here is the Bonferroni Correction as an equation. <strong>𝛼 = FWER / Number of Hypothesis Tests</strong>. For example, if we conduct 1,000,000 tests and would like a FWER of 0.05, 𝛼 must equal 5 x 10 ^ -8. With this new threshold in mind, let's look back at a Manhattan Plot of SNPs that are truly null. If these SNPs are truly null, any point above the horizontal threshold line is considered a Type 1 Error. Figure 5 has two horizontal lines, one at 𝛼 = 0.05 and one at 𝛼 = 0.00000005. Imagine the proportion of Type 1 Error if our threshold was not adjusted.
+
+<center>
+![Figure 5: Manhattan Plot With Thresholds](images/finalmanhattan.png){width=90%}
+</center>
 
 ## False Discovery Rate
+
+While the Bonferroni Correction is straightforward, easy to use, and clearly effective (as shown by Figure 5), there are limitations and shortcomings to this procedure. When hypothesis tests are correlated, which they commonly are in GWAS, the Bonferroni Correction is overly conservative. This means that the adjusted significance threshold is too small, so we will not be able to reject the null as much, limiting power. Without diving into how and why SNPs are correlated, this truth about Bonferroni can be understood by analyzing the equation. When SNPs are correlated, there are essentially less SNPs being studied, and because we divide by the number of hypothesis tests conducted, this number in the denominator is larger than it should be, causing 𝛼 to be smaller than it should be.
+
+To account for correlation, there are simulation-based approaches to determining a threshold. For more about this, please continue to read through this website.
+
+Besides simulation-based approaches, there are also alternatives to the FWER. One of these alternatives is known as the <strong>False Discovery Rate (FDR)</strong>. FDR is defined as the proportion of false rejections of the null among all significant results. A FDR of 5% means that, among all features called significant, 5% of these are truly null. Essentially, the FWER controls the probability of all Type 1 Error, while the FDR allows more Type 1 Error but controls how many there are in proportion to true rejections of the null. While FDR may allow for a higher Type 1 Error rate, the trade-off is higher power. Furthermore, this power advantage increases with an increasing number of hypothesis tests.
+
+For more on the FDR compared to the FWER, check out this journal. <a href="https://www.stat.purdue.edu/~doerge/BIOINFORM.D/FALL06/Benjamini%20and%20Y%20FDR.pdf">FDR Journal</a>
+
