@@ -2440,7 +2440,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <a href="index.html" class="title">Home</a>
 </div>
 <div class="nav-right">
-<a href="multipletesting.html">Hypothesis Testing Background</a>
+<a href="multipletesting.html">Multiple Hypothesis Testing</a>
 <a href="data.html">Data</a>
 <a href="analysisR.html">Data Analysis</a>
 <a href="HapMapPlink.html">Hypothesis Testing in PLINK</a>
@@ -2602,7 +2602,7 @@ rs1048488  0.15853659</code></pre>
 \beta_0\\
 \beta_1 \\
 \end{bmatrix}\]</span></p>
-<p>Executing this multiplication, we just get <span class="math inline">\(1 * \beta_0 = 0\)</span>. The is problematic because we have linear dependence. You can get the column of minor allele counts by multiplying the intercept column by 0 - in other words, the minor allele count column is a linear combination of the intercept column. This makes our design matrix not be full rank, making <span class="math inline">\(X^TX\)</span> not invertible and the least squares estimator not defined.</p>
+<p>This problematic because we have linear dependence. You can get the column of minor allele counts by multiplying the intercept column by 0 - in other words, the minor allele count column is a linear combination of the intercept column. This makes our design matrix not be full rank, making <span class="math inline">\(X^TX\)</span> not invertible and the least squares estimator not defined.</p>
 <p>Given all these reasons, we remove SNPs with a MAF of 0 using the code below.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
