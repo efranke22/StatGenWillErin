@@ -4,7 +4,7 @@ theme: theme.css
 search: true
 description: |
   My R ponderings
-output_dir: "_site"
+output_dir: "public"
 navbar:
   right:
     - text: "Multiple Hypothesis Testing"
